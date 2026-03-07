@@ -1,0 +1,6 @@
+@IISNotionSearch.API_HostAddress = http://localhost:5287
+
+GET {{IISNotionSearch.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
