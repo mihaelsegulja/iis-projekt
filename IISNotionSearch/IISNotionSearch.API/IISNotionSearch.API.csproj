@@ -12,7 +12,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Controllers\" />
+      <ProjectReference Include="..\IISNotionSearch.Application\IISNotionSearch.Application.csproj" />
+      <ProjectReference Include="..\IISNotionSearch.Domain\IISNotionSearch.Domain.csproj" />
+      <ProjectReference Include="..\IISNotionSearch.Infrastructure\IISNotionSearch.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

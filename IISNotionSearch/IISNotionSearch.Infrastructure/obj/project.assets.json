@@ -1,0 +1,112 @@
+{
+  "version": 3,
+  "targets": {
+    "net8.0": {
+      "IISNotionSearch.Application/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "IISNotionSearch.Domain": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/IISNotionSearch.Application.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/IISNotionSearch.Application.dll": {}
+        }
+      },
+      "IISNotionSearch.Domain/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "compile": {
+          "bin/placeholder/IISNotionSearch.Domain.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/IISNotionSearch.Domain.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "IISNotionSearch.Application/1.0.0": {
+      "type": "project",
+      "path": "../IISNotionSearch.Application/IISNotionSearch.Application.csproj",
+      "msbuildProject": "../IISNotionSearch.Application/IISNotionSearch.Application.csproj"
+    },
+    "IISNotionSearch.Domain/1.0.0": {
+      "type": "project",
+      "path": "../IISNotionSearch.Domain/IISNotionSearch.Domain.csproj",
+      "msbuildProject": "../IISNotionSearch.Domain/IISNotionSearch.Domain.csproj"
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net8.0": [
+      "IISNotionSearch.Application >= 1.0.0"
+    ]
+  },
+  "packageFolders": {
+    "/home/miki/.nuget/packages/": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "/home/miki/Desktop/iis-projekt/IISNotionSearch/IISNotionSearch.Infrastructure/IISNotionSearch.Infrastructure.csproj",
+      "projectName": "IISNotionSearch.Infrastructure",
+      "projectPath": "/home/miki/Desktop/iis-projekt/IISNotionSearch/IISNotionSearch.Infrastructure/IISNotionSearch.Infrastructure.csproj",
+      "packagesPath": "/home/miki/.nuget/packages/",
+      "outputPath": "/home/miki/Desktop/iis-projekt/IISNotionSearch/IISNotionSearch.Infrastructure/obj/",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "/home/miki/.nuget/NuGet/NuGet.Config"
+      ],
+      "originalTargetFrameworks": [
+        "net8.0"
+      ],
+      "sources": {
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "projectReferences": {
+            "/home/miki/Desktop/iis-projekt/IISNotionSearch/IISNotionSearch.Application/IISNotionSearch.Application.csproj": {
+              "projectPath": "/home/miki/Desktop/iis-projekt/IISNotionSearch/IISNotionSearch.Application/IISNotionSearch.Application.csproj"
+            }
+          }
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      }
+    },
+    "frameworks": {
+      "net8.0": {
+        "targetAlias": "net8.0",
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/8.0.417/PortableRuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}
