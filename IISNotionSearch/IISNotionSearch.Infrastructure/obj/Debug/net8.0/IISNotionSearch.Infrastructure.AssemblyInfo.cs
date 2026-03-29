@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("IISNotionSearch.Infrastructure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fc1c10b0cee67ea076857669780a0a551bb40768")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+085fc9a8b9b86bed20b7df33b61d93bbb877c6f5")]
 [assembly: System.Reflection.AssemblyProductAttribute("IISNotionSearch.Infrastructure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("IISNotionSearch.Infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
