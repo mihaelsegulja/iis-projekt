@@ -3,7 +3,8 @@ using IISNotionSearch.Domain.Entities;
 
 namespace IISNotionSearch.Domain.Interfaces;
 
-public interface IUserRepository : IBaseRepository<User>
+public interface IRefreshTokenRepository : IBaseRepository<RefreshToken>
 {
-    Task<User?> GetByUsernameAsync(string username);
+    Task<RefreshToken?> GetByTokenAsync(string token);
 }
+

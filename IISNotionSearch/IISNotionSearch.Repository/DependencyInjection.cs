@@ -1,4 +1,7 @@
+using IISNotionSearch.Domain.Abstractions;
 using IISNotionSearch.Repository.Repositories;
+using IISNotionSearch.Domain.Interfaces;
+using IISNotionSearch.Repository.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,8 +17,10 @@ public static class DependencyInjection
                 configuration.GetConnectionString("Db"), 
                 x => x.MigrationsAssembly("IISNotionSearch.Repository")));
 
-        services.AddScoped<IISNotionSearch.Domain.Interfaces.IUserRepository, UserRepository>();
-
+        services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+        
         return services;
     }
 }

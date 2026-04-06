@@ -1,8 +1,9 @@
 using System.Linq.Expressions;
+using IISNotionSearch.Domain.Abstractions;
 using IISNotionSearch.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace IISNotionSearch.Repository.Repositories;
+namespace IISNotionSearch.Repository.Abstractions;
 
 public class BaseRepository<T> : IBaseRepository<T> where T : class
 {

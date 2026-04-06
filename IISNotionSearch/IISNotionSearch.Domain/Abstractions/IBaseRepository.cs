@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace IISNotionSearch.Domain.Interfaces;
+namespace IISNotionSearch.Domain.Abstractions;
 
 public interface IBaseRepository<T> where T : class
 {
