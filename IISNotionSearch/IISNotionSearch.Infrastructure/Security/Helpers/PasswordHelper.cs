@@ -1,6 +1,6 @@
-using IISNotionSearch.Application.Interfaces.Helpers;
+using IISNotionSearch.Application.Common.Interfaces.Security;
 
-namespace IISNotionSearch.Application.Services.Helpers;
+namespace IISNotionSearch.Infrastructure.Security.Helpers;
 
 public class PasswordHelper : IPasswordHelper
 {

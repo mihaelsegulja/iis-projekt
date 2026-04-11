@@ -1,7 +1,7 @@
 using IISNotionSearch.Application.DTOs.Auth;
-using IISNotionSearch.Application.Interfaces.Helpers;
+using IISNotionSearch.Application.Common.Interfaces.Security;
 using IISNotionSearch.Application.Interfaces.Services;
-using IISNotionSearch.Application.Abstractions;
+using IISNotionSearch.Application.Models;
 using IISNotionSearch.Domain.Entities;
 using IISNotionSearch.Domain.Interfaces;
 using IISNotionSearch.Application.Configurations;
@@ -48,7 +48,6 @@ public class AuthService : IAuthService
             Created = DateTime.UtcNow
         });
 
-        _userRepository.Update(user);
         await _userRepository.SaveChangesAsync();
 
         var responseData = new AuthResponseDto
@@ -89,7 +88,6 @@ public class AuthService : IAuthService
             Created = DateTime.UtcNow
         });
 
-        _userRepository.Update(newUser);
         await _userRepository.SaveChangesAsync();
 
         var responseData = new AuthResponseDto

@@ -1,4 +1,4 @@
-using IISNotionSearch.Application.Abstractions;
+using IISNotionSearch.Application.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IISNotionSearch.API.Abstractions;

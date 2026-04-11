@@ -1,4 +1,4 @@
-namespace IISNotionSearch.Application.Abstractions;
+namespace IISNotionSearch.Application.Models;
 
 public enum ResultStatus
 {

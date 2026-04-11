@@ -1,5 +1,5 @@
-using IISNotionSearch.Application.Abstractions;
 using IISNotionSearch.Application.DTOs.Auth;
+using IISNotionSearch.Application.Models;
 
 namespace IISNotionSearch.Application.Interfaces.Services;
 

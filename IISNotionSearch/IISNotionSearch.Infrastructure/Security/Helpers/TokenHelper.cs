@@ -3,11 +3,12 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using IISNotionSearch.Application.Configurations;
-using IISNotionSearch.Application.Interfaces.Helpers;
+using IISNotionSearch.Application.Common.Interfaces.Security;
+using IISNotionSearch.Application.Constants;
 using IISNotionSearch.Domain.Entities;
 using Microsoft.IdentityModel.Tokens;
 
-namespace IISNotionSearch.Application.Services.Helpers;
+namespace IISNotionSearch.Infrastructure.Security.Helpers;
 
 public class TokenHelper : ITokenHelper
 {
@@ -25,10 +26,11 @@ public class TokenHelper : ITokenHelper
 
         var claims = new[]
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.UniqueName, user.Username),
-            new Claim(ClaimTypes.Role, user.Role.ToString()),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            
+            new Claim(CustomClaimTypes.UserId, user.Id.ToString()),
+            new Claim(CustomClaimTypes.Role, user.Role.ToString())
         };
 
         var token = new JwtSecurityToken(
@@ -43,7 +45,7 @@ public class TokenHelper : ITokenHelper
 
     public string GenerateRefreshToken()
     {
-        var randomBytes = new byte[32];
+        var randomBytes = new byte[64];
         using var rng = RandomNumberGenerator.Create();
         rng.GetBytes(randomBytes);
         return Convert.ToBase64String(randomBytes);

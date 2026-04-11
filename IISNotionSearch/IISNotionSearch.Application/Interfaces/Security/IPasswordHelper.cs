@@ -1,4 +1,4 @@
-namespace IISNotionSearch.Application.Interfaces.Helpers;
+namespace IISNotionSearch.Application.Common.Interfaces.Security;
 
 public interface IPasswordHelper
 {
