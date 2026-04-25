@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using IISNotionSearch.API.Abstractions;
+using IISNotionSearch.API.Abstractions.Exceptions;
 using IISNotionSearch.API.Extensions;
 using IISNotionSearch.Application;
 using IISNotionSearch.Infrastructure;

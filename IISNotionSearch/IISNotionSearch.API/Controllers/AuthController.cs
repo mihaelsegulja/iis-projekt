@@ -1,4 +1,5 @@
 using IISNotionSearch.API.Abstractions;
+using IISNotionSearch.API.Abstractions.Controllers;
 using IISNotionSearch.Application.DTOs.Auth;
 using IISNotionSearch.Application.Interfaces.Services;
 using IISNotionSearch.Application.Configurations;

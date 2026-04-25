@@ -77,6 +77,7 @@ public class AuthService : IAuthService
         };
 
         await _userRepository.AddAsync(newUser);
+        await _userRepository.SaveChangesAsync();
         
         var accessToken = _tokenHelper.GenerateAccessToken(newUser);
         var refreshToken = _tokenHelper.GenerateRefreshToken();

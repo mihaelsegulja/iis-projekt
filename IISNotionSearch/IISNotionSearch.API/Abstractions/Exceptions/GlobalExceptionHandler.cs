@@ -1,7 +1,7 @@
 using IISNotionSearch.Application.Models;
 using Microsoft.AspNetCore.Diagnostics;
 
-namespace IISNotionSearch.API.Abstractions;
+namespace IISNotionSearch.API.Abstractions.Exceptions;
 
 public class GlobalExceptionHandler : IExceptionHandler
 {
