@@ -16,10 +16,10 @@ public class StandardResponse<T>
     public bool Success { get; set; }
     public T? Data { get; set; }
     public ResultStatus Status { get; set; }
-    public string Message { get; set; } = string.Empty;
+    public string? Message { get; set; } = string.Empty;
     public IEnumerable<string>? Errors { get; set; }
 
-    public static StandardResponse<T> Create(ResultStatus status, T? data = default, string message = "", IEnumerable<string>? errors = null)
+    public static StandardResponse<T> Create(ResultStatus status, T? data = default, string? message = null, IEnumerable<string>? errors = null)
     {
         return new StandardResponse<T>
         {

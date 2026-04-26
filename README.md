@@ -14,6 +14,10 @@
 - .NET 8 SDK installed
 - Docker & Docker Compose installed
 - Node.js ^20.19.0 || ^22.12.0 || ^24.0.0
+- **HTTPS Trust:** Required for gRPC and local development:
+  ```bash
+  dotnet dev-certs https --trust
+  ```
 - (Optional) dotnet-ef tools if you need to run migrations: `dotnet tool install --global dotnet-ef`
 
 ### Setup
@@ -57,7 +61,8 @@ npm run start
 
 ### Database migrations (if needed)
 
-- The project uses Entity Framework Core (Microsoft.EntityFrameworkCore.SqlServer). If you need to create or apply migrations (from `IISNotionSearch` solution dir):
+- The project uses Entity Framework Core (Microsoft.EntityFrameworkCore.SqlServer) and applies migrations on start of the application. 
+- If you need to create or apply migrations (from `IISNotionSearch` solution dir):
 
 **create a migration**
 
