@@ -1,8 +1,9 @@
+using IISNotionSearch.Domain.Abstractions;
+
 namespace IISNotionSearch.Domain.Entities;
 
-public class RefreshToken
+public class RefreshToken : BaseEntity
 {
-    public int Id { get; set; }
     public string Token { get; set; } = null!;
     public int UserId { get; set; }
     public DateTime Created { get; set; }

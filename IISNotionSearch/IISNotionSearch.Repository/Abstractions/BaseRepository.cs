@@ -7,27 +7,27 @@ namespace IISNotionSearch.Repository.Abstractions;
 
 public class BaseRepository<T> : IBaseRepository<T> where T : class
 {
-    protected readonly AppDbContext _context;
-    protected readonly DbSet<T> _dbSet;
+    protected readonly AppDbContext Context;
+    protected readonly DbSet<T> DbSet;
 
     public BaseRepository(AppDbContext context)
     {
-        _context = context;
-        _dbSet = _context.Set<T>();
+        Context = context;
+        DbSet = Context.Set<T>();
     }
 
-    public async Task<T?> GetByIdAsync(int id) => await _dbSet.FindAsync(id);
+    public async Task<T?> GetByIdAsync(int id) => await DbSet.FindAsync(id);
 
-    public async Task<IEnumerable<T>> GetAllAsync() => await _dbSet.ToListAsync();
-    public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate) => await _dbSet.Where(predicate).ToListAsync();
+    public async Task<IEnumerable<T>> GetAllAsync() => await DbSet.ToListAsync();
+    public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate) => await DbSet.Where(predicate).ToListAsync();
 
-    public async Task AddAsync(T entity) => await _dbSet.AddAsync(entity);
+    public async Task AddAsync(T entity) => await DbSet.AddAsync(entity);
 
-    public void Update(T entity) => _dbSet.Update(entity);
+    public void Update(T entity) => DbSet.Update(entity);
 
-    public void Delete(T entity) => _dbSet.Remove(entity);
+    public void Delete(T entity) => DbSet.Remove(entity);
     
     public async Task<bool> ExistsAsync(int id) => await GetByIdAsync(id) != null;
 
-    public async Task SaveChangesAsync() => await _context.SaveChangesAsync();
+    public async Task SaveChangesAsync() => await Context.SaveChangesAsync();
 }

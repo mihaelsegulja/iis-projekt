@@ -13,6 +13,6 @@ public class RefreshTokenRepository : BaseRepository<RefreshToken>, IRefreshToke
 
     public Task<RefreshToken?> GetByTokenAsync(string token)
     {
-        return _dbSet.Include(rt => rt.User).FirstOrDefaultAsync(rt => rt.Token == token);
+        return DbSet.Include(rt => rt.User).FirstOrDefaultAsync(rt => rt.Token == token);
     }
 }

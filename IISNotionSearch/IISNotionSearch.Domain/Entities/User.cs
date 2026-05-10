@@ -1,10 +1,10 @@
+using IISNotionSearch.Domain.Abstractions;
 using IISNotionSearch.Domain.Enums;
 
 namespace IISNotionSearch.Domain.Entities;
 
-public class User
+public class User : BaseEntity
 {
-    public int Id { get; set; }
     public string Username { get; set; } = null!;
     public string PasswordHash { get; set; } = null!;
     public string PasswordSalt { get; set; } = null!;

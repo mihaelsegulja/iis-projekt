@@ -13,6 +13,6 @@ public class UserRepository : BaseRepository<User>, IUserRepository
 
     public Task<User?> GetByUsernameAsync(string username)
     {
-        return _dbSet.FirstOrDefaultAsync(u => u.Username == username);
+        return DbSet.FirstOrDefaultAsync(u => u.Username == username);
     }
 }

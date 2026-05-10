@@ -11,6 +11,7 @@ public class AppDbContext : DbContext
     
     public DbSet<User> Users { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
+    public DbSet<NotionObject> NotionObjects { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -35,6 +36,18 @@ public class AppDbContext : DbContext
                 .WithMany(u => u.RefreshTokens)
                 .HasForeignKey(rt => rt.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<NotionObject>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.NotionId).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.ObjectType).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.Title).IsRequired().HasMaxLength(500);
+            entity.Property(e => e.Url).IsRequired().HasMaxLength(1000);
+            entity.Property(e => e.Icon).HasMaxLength(1000);
+            entity.Property(e => e.Cover).HasMaxLength(1000);
+            entity.Property(e => e.RawJson).HasColumnType("nvarchar(max)");
         });
     }
 }

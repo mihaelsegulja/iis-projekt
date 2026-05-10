@@ -3,6 +3,7 @@ using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Authentication;
 using IISNotionSearch.Application.Common.Interfaces.Security;
+using IISNotionSearch.Application.Configurations;
 using IISNotionSearch.Application.Interfaces.Common;
 using IISNotionSearch.Infrastructure.Security.Helpers;
 using IISNotionSearch.Infrastructure.Services;
@@ -21,6 +22,10 @@ public static class DependencyInjection
             client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) IISNotionSearch/1.0");
             client.DefaultRequestHeaders.Add("Accept", "text/xml");
         }).ConfigurePrimaryHttpMessageHandler(CreateDhmzHttpHandler);
+
+        services.Configure<NotionConfig>(configuration.GetSection("NotionConfig"));
+        services.AddHttpClient<ExternalServices.NotionHttpClient>();
+
         services.AddScoped<IPasswordHelper, PasswordHelper>();
         services.AddScoped<ITokenHelper, TokenHelper>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();

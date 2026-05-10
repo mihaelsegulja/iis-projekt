@@ -20,10 +20,10 @@ builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddGrpc();
-var grpcAddress = builder.Configuration["Grpc:WeatherServiceUrl"] ?? "https://localhost:7026";
+var grpcAddress = builder.Configuration["Grpc:WeatherServiceUrl"];
 builder.Services.AddGrpcClient<WeatherService.WeatherServiceClient>(options =>
 {
-    options.Address = new Uri(grpcAddress);
+    options.Address = new Uri(grpcAddress!);
 });
 
 builder.Services.AddJwtAuthentication(builder.Configuration);
@@ -54,6 +54,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     
     app.ApplyMigrations();
+    await app.SeedDataAsync();
 }
 
 app.UseHttpsRedirection();
