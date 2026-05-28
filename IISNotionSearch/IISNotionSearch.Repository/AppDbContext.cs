@@ -47,7 +47,6 @@ public class AppDbContext : DbContext
             entity.Property(e => e.Url).IsRequired().HasMaxLength(1000);
             entity.Property(e => e.Icon).HasMaxLength(1000);
             entity.Property(e => e.Cover).HasMaxLength(1000);
-            entity.Property(e => e.RawJson).HasColumnType("nvarchar(max)");
         });
     }
 }

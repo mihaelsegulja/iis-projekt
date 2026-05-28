@@ -1,8 +1,6 @@
-using IISNotionSearch.Domain.Abstractions;
+namespace IISNotionSearch.Application.DTOs.Notion;
 
-namespace IISNotionSearch.Domain.Entities;
-
-public class NotionObject : BaseEntity
+public class NotionObjectDto
 {
     public string NotionId { get; set; } = null!;
     public string ObjectType { get; set; } = null!;

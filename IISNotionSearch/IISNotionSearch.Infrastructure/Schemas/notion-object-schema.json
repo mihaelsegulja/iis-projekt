@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NotionObjectDto",
+  "type": "object",
+  "properties": {
+    "notionId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "objectType": {
+      "type": "string",
+      "enum": ["page", "database"]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "icon": {
+      "type": ["string", "null"]
+    },
+    "cover": {
+      "type": ["string", "null"]
+    },
+    "createdTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "lastEditedTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "inTrash": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": ["notionId", "objectType", "title", "url"]
+}

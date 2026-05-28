@@ -4,8 +4,8 @@ using IISNotionSearch.API.Abstractions.Exceptions;
 using IISNotionSearch.API.Extensions;
 using IISNotionSearch.Application;
 using IISNotionSearch.Infrastructure;
-using IISNotionSearch.Infrastructure.ExternalServices;
 using IISNotionSearch.Infrastructure.Grpc;
+using IISNotionSearch.Infrastructure.Services;
 using IISNotionSearch.Repository;
 
 var builder = WebApplication.CreateBuilder(args);

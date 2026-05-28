@@ -9,6 +9,7 @@ using IISNotionSearch.Infrastructure.Security.Helpers;
 using IISNotionSearch.Infrastructure.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace IISNotionSearch.Infrastructure;
 
@@ -16,7 +17,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddHttpClient<ExternalServices.DhmzGrpcService>(client =>
+        services.AddHttpClient<DhmzGrpcService>(client =>
         {
             client.BaseAddress = new Uri("https://vrijeme.hr/");
             client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) IISNotionSearch/1.0");
@@ -24,7 +25,32 @@ public static class DependencyInjection
         }).ConfigurePrimaryHttpMessageHandler(CreateDhmzHttpHandler);
 
         services.Configure<NotionConfig>(configuration.GetSection("NotionConfig"));
-        services.AddHttpClient<ExternalServices.NotionHttpClient>();
+
+        services.AddHttpClient<NotionHttpClient>((provider, client) =>
+        {
+            var config = provider.GetRequiredService<IOptions<NotionConfig>>().Value;
+            var baseUrl = config.BaseUrl;
+            if (!baseUrl.EndsWith("/"))
+            {
+                baseUrl += "/";
+            }
+            client.BaseAddress = new Uri(baseUrl);
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {config.InternalIntegrationSecret}");
+            client.DefaultRequestHeaders.Add("Notion-Version", config.Version);
+        });
+
+        services.AddScoped<ExternalNotionService>();
+
+        services.AddScoped<IISNotionSearch.Application.Interfaces.Services.INotionService>(provider =>
+        {
+            var appConfig = provider.GetRequiredService<IOptions<AppConfig>>().Value;
+            if (appConfig.DataSource == DataSourceType.Local)
+            {
+                return provider.GetRequiredService<IISNotionSearch.Application.Services.LocalNotionService>();
+            }
+
+            return provider.GetRequiredService<ExternalNotionService>();
+        });
 
         services.AddScoped<IPasswordHelper, PasswordHelper>();
         services.AddScoped<ITokenHelper, TokenHelper>();
@@ -87,4 +113,3 @@ public static class DependencyInjection
         };
     }
 }
-

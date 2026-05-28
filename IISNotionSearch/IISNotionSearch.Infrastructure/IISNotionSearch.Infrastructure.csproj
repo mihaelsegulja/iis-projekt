@@ -14,7 +14,6 @@
       <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
       <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
-      <PackageReference Include="Microsoft.Kiota.Bundle" Version="2.0.0" />
       <PackageReference Include="System.Text.Encoding.CodePages" Version="8.0.0" />
       <PackageReference Include="Grpc.Tools" Version="2.62.0">
         <PrivateAssets>all</PrivateAssets>
@@ -22,10 +21,6 @@
       </PackageReference>
       <PackageReference Include="Google.Protobuf" Version="3.26.1" />
       <PackageReference Include="Grpc.Net.Client" Version="2.62.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Protobuf Include="Protos\weather.proto" GrpcServices="Both" />
     </ItemGroup>
 
     <ItemGroup>
@@ -37,6 +32,12 @@
       <Reference Include="Microsoft.AspNetCore.Http.Abstractions">
         <HintPath>..\..\..\..\..\..\usr\share\dotnet\shared\Microsoft.AspNetCore.App\8.0.25\Microsoft.AspNetCore.Http.Abstractions.dll</HintPath>
       </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Protobuf Include="Protos\weather.proto">
+        <Generator>MSBuild:Compile</Generator>
+      </Protobuf>
     </ItemGroup>
 
 </Project>
