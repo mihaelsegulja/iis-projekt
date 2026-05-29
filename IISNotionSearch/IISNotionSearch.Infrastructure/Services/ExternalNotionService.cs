@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using IISNotionSearch.Application.DTOs.Notion;
 using IISNotionSearch.Application.Interfaces.Services;
 using IISNotionSearch.Application.Models;
@@ -46,27 +47,22 @@ public class ExternalNotionService : INotionService
         }
     }
 
-    public async Task<StandardResponse<NotionObjectDto>> CreatePageAsync(object pageData)
+    public async Task<StandardResponse<NotionObjectDto>> CreatePageAsync(CreateNotionPageDto request)
     {
         try
         {
-            var title = pageData is NotionObjectDto dto && !string.IsNullOrWhiteSpace(dto.Title)
-                ? dto.Title
-                : "New Page";
+            var title = string.IsNullOrWhiteSpace(request.Title) ? "New Page" : request.Title;
+            var apiRequest = BuildCreateRequest(title, request.Icon, request.Cover);
+            var response = await _httpClient.CreatePageAsync(apiRequest);
+            var dto = response?.ToDto();
 
-            var request = BuildTitleProperties(title);
-            var response = await _httpClient.CreatePageAsync(request);
-            var resultDto = response?.ToDto() ?? new NotionObjectDto
+            if (dto == null)
             {
-                NotionId = string.Empty,
-                ObjectType = "page",
-                Title = title,
-                Url = string.Empty,
-                CreatedTime = DateTimeOffset.UtcNow,
-                LastEditedTime = DateTimeOffset.UtcNow,
-                InTrash = false
-            };
-            return StandardResponse<NotionObjectDto>.Create(ResultStatus.Created, resultDto);
+                return StandardResponse<NotionObjectDto>.Create(ResultStatus.InternalError,
+                    message: "Failed to parse Notion API response");
+            }
+
+            return StandardResponse<NotionObjectDto>.Create(ResultStatus.Created, dto);
         }
         catch (Exception ex)
         {
@@ -74,27 +70,21 @@ public class ExternalNotionService : INotionService
         }
     }
 
-    public async Task<StandardResponse<NotionObjectDto>> UpdatePageAsync(string id, object pageData)
+    public async Task<StandardResponse<NotionObjectDto>> UpdatePageAsync(string id, UpdateNotionPageDto request)
     {
         try
         {
-            var title = pageData is NotionObjectDto dto && !string.IsNullOrWhiteSpace(dto.Title)
-                ? dto.Title
-                : "Untitled";
+            var apiRequest = BuildUpdateRequest(request.Title);
+            var response = await _httpClient.UpdatePageAsync(id, apiRequest);
+            var dto = response?.ToDto();
 
-            var request = BuildTitleProperties(title);
-            var response = await _httpClient.UpdatePageAsync(id, request);
-            var resultDto = response?.ToDto() ?? new NotionObjectDto
+            if (dto == null)
             {
-                NotionId = id,
-                ObjectType = "page",
-                Title = title,
-                Url = string.Empty,
-                CreatedTime = DateTimeOffset.UtcNow,
-                LastEditedTime = DateTimeOffset.UtcNow,
-                InTrash = false
-            };
-            return StandardResponse<NotionObjectDto>.Create(ResultStatus.Ok, resultDto);
+                return StandardResponse<NotionObjectDto>.Create(ResultStatus.InternalError,
+                    message: "Failed to parse Notion API response");
+            }
+
+            return StandardResponse<NotionObjectDto>.Create(ResultStatus.Ok, dto);
         }
         catch (Exception ex)
         {
@@ -115,8 +105,37 @@ public class ExternalNotionService : INotionService
         }
     }
 
-    private static object BuildTitleProperties(string title)
+    private static object BuildCreateRequest(string title, string? icon, string? cover)
     {
+        var request = new Dictionary<string, object?>
+        {
+            ["parent"] = new { type = "page_id", page_id = "" },
+            ["properties"] = new Dictionary<string, object>
+            {
+                ["Title"] = new
+                {
+                    title = new[]
+                    {
+                        new { text = new { content = title } }
+                    }
+                }
+            }
+        };
+
+        if (!string.IsNullOrWhiteSpace(icon))
+            request["icon"] = new { emoji = icon };
+
+        if (!string.IsNullOrWhiteSpace(cover))
+            request["cover"] = new { external = new { url = cover } };
+
+        return request;
+    }
+
+    private static object BuildUpdateRequest(string? title)
+    {
+        if (string.IsNullOrWhiteSpace(title))
+            return new { };
+
         return new
         {
             properties = new
@@ -125,13 +144,7 @@ public class ExternalNotionService : INotionService
                 {
                     title = new[]
                     {
-                        new
-                        {
-                            text = new
-                            {
-                                content = title
-                            }
-                        }
+                        new { text = new { content = title } }
                     }
                 }
             }

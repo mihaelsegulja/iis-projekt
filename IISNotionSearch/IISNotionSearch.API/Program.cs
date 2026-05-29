@@ -18,6 +18,7 @@ builder.Services.AddSwagger();
 builder.Services.AddRepository(builder.Configuration);
 builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddNotionServiceSwitch(builder.Configuration);
 
 builder.Services.AddGrpc();
 var grpcAddress = builder.Configuration["Grpc:WeatherServiceUrl"];

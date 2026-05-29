@@ -30,16 +30,16 @@ public class NotionController : BaseController
     }
 
     [HttpPost("pages")]
-    public async Task<IActionResult> CreatePage([FromBody] NotionObjectDto pageData)
+    public async Task<IActionResult> CreatePage([FromBody] CreateNotionPageDto request)
     {
-        var response = await _notionService.CreatePageAsync(pageData);
+        var response = await _notionService.CreatePageAsync(request);
         return HandleResponse(response);
     }
 
     [HttpPatch("pages/{id}")]
-    public async Task<IActionResult> UpdatePage([FromRoute] string id, [FromBody] NotionObjectDto pageData)
+    public async Task<IActionResult> UpdatePage([FromRoute] string id, [FromBody] UpdateNotionPageDto request)
     {
-        var response = await _notionService.UpdatePageAsync(id, pageData);
+        var response = await _notionService.UpdatePageAsync(id, request);
         return HandleResponse(response);
     }
 

@@ -43,23 +43,20 @@ public class LocalNotionService : INotionService
         return StandardResponse<NotionObjectDto>.Create(ResultStatus.Ok, page.ToDto());
     }
 
-    public async Task<StandardResponse<NotionObjectDto>> CreatePageAsync(object pageData)
+    public async Task<StandardResponse<NotionObjectDto>> CreatePageAsync(CreateNotionPageDto request)
     {
         var entity = new NotionObject
         {
             NotionId = Guid.NewGuid().ToString(),
             ObjectType = "page",
-            Title = "New Page",
+            Title = string.IsNullOrWhiteSpace(request.Title) ? "New Page" : request.Title,
             Url = "local://newpage",
+            Icon = request.Icon,
+            Cover = request.Cover,
             CreatedTime = DateTimeOffset.UtcNow,
             LastEditedTime = DateTimeOffset.UtcNow,
             InTrash = false
         };
-
-        if (pageData is NotionObjectDto dto && !string.IsNullOrWhiteSpace(dto.Title))
-        {
-            entity.Title = dto.Title;
-        }
 
         await _repository.AddAsync(entity);
         await _repository.SaveChangesAsync();
@@ -67,7 +64,7 @@ public class LocalNotionService : INotionService
         return StandardResponse<NotionObjectDto>.Create(ResultStatus.Created, entity.ToDto());
     }
 
-    public async Task<StandardResponse<NotionObjectDto>> UpdatePageAsync(string id, object pageData)
+    public async Task<StandardResponse<NotionObjectDto>> UpdatePageAsync(string id, UpdateNotionPageDto request)
     {
         var results = await _repository.FindAsync(x => x.NotionId == id && !x.InTrash);
         var page = results.FirstOrDefault();
@@ -75,10 +72,14 @@ public class LocalNotionService : INotionService
         if (page == null)
             return StandardResponse<NotionObjectDto>.Create(ResultStatus.NotFound, message: "Page not found");
 
-        if (pageData is NotionObjectDto dto && !string.IsNullOrWhiteSpace(dto.Title))
-        {
-            page.Title = dto.Title;
-        }
+        if (!string.IsNullOrWhiteSpace(request.Title))
+            page.Title = request.Title;
+        
+        if (request.Icon != null)
+            page.Icon = request.Icon;
+        
+        if (request.Cover != null)
+            page.Cover = request.Cover;
         
         page.LastEditedTime = DateTimeOffset.UtcNow;
         _repository.Update(page);

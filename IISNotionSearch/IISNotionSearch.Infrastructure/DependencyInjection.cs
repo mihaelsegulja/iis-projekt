@@ -30,9 +30,9 @@ public static class DependencyInjection
         {
             var config = provider.GetRequiredService<IOptions<NotionConfig>>().Value;
             var baseUrl = config.BaseUrl;
-            if (!baseUrl.EndsWith("/"))
+            if (!baseUrl.EndsWith('/'))
             {
-                baseUrl += "/";
+                baseUrl += '/';
             }
             client.BaseAddress = new Uri(baseUrl);
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {config.InternalIntegrationSecret}");
@@ -40,17 +40,6 @@ public static class DependencyInjection
         });
 
         services.AddScoped<ExternalNotionService>();
-
-        services.AddScoped<IISNotionSearch.Application.Interfaces.Services.INotionService>(provider =>
-        {
-            var appConfig = provider.GetRequiredService<IOptions<AppConfig>>().Value;
-            if (appConfig.DataSource == DataSourceType.Local)
-            {
-                return provider.GetRequiredService<IISNotionSearch.Application.Services.LocalNotionService>();
-            }
-
-            return provider.GetRequiredService<ExternalNotionService>();
-        });
 
         services.AddScoped<IPasswordHelper, PasswordHelper>();
         services.AddScoped<ITokenHelper, TokenHelper>();
