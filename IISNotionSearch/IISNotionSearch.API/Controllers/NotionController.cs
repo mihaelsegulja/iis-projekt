@@ -1,11 +1,13 @@
-using System.Threading.Tasks;
+using IISNotionSearch.API.Abstractions.Attributes;
 using IISNotionSearch.API.Abstractions.Controllers;
 using IISNotionSearch.Application.DTOs.Notion;
 using IISNotionSearch.Application.Interfaces.Services;
+using IISNotionSearch.Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IISNotionSearch.API.Controllers;
 
+[AuthorizeRoles(Roles.User)]
 public class NotionController : BaseController
 {
     private readonly INotionService _notionService;
@@ -29,6 +31,7 @@ public class NotionController : BaseController
         return HandleResponse(response);
     }
 
+    [AuthorizeRoles(Roles.Admin)]
     [HttpPost("pages")]
     public async Task<IActionResult> CreatePage([FromBody] CreateNotionPageDto request)
     {
@@ -36,6 +39,7 @@ public class NotionController : BaseController
         return HandleResponse(response);
     }
 
+    [AuthorizeRoles(Roles.Admin)]
     [HttpPatch("pages/{id}")]
     public async Task<IActionResult> UpdatePage([FromRoute] string id, [FromBody] UpdateNotionPageDto request)
     {
@@ -43,6 +47,7 @@ public class NotionController : BaseController
         return HandleResponse(response);
     }
 
+    [AuthorizeRoles(Roles.Admin)]
     [HttpDelete("pages/{id}")]
     public async Task<IActionResult> DeletePage([FromRoute] string id)
     {
