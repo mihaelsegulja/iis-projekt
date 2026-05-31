@@ -12,11 +12,16 @@ public class AuthorizeRolesAttribute : AuthorizeAttribute
             Roles = string.Join(",", explicitRoles.Select(r => r.ToString()));
         }
     }
+    
+    private Roles _minRole;
 
     public Roles MinRole
     {
+        get => _minRole;
         set
         {
+            _minRole = value;
+
             var hierarchicalRoles = Enum.GetValues<Roles>()
                 .Where(r => (int)r >= (int)value)
                 .Select(r => r.ToString());

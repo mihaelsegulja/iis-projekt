@@ -1,18 +1,22 @@
 using System.Collections.Generic;
+using IISNotionSearch.Application.Configurations;
 using IISNotionSearch.Application.DTOs.Notion;
 using IISNotionSearch.Application.Interfaces.Services;
 using IISNotionSearch.Application.Models;
 using IISNotionSearch.Infrastructure.Mappers;
+using Microsoft.Extensions.Options;
 
 namespace IISNotionSearch.Infrastructure.Services;
 
 public class ExternalNotionService : INotionService
 {
     private readonly NotionHttpClient _httpClient;
+    private readonly NotionConfig _config;
 
-    public ExternalNotionService(NotionHttpClient httpClient)
+    public ExternalNotionService(NotionHttpClient httpClient, IOptions<NotionConfig> config)
     {
         _httpClient = httpClient;
+        _config = config.Value;
     }
 
     public async Task<StandardResponse<IEnumerable<NotionObjectDto>>> SearchAsync(string? query = null)
@@ -105,28 +109,30 @@ public class ExternalNotionService : INotionService
         }
     }
 
-    private static object BuildCreateRequest(string title, string? icon, string? cover)
+    #region Private methods
+
+    private object BuildCreateRequest(string title, string? icon, string? cover)
     {
         var request = new Dictionary<string, object?>
         {
-            ["parent"] = new { type = "page_id", page_id = "" },
+            ["parent"] = new { type = "page_id", page_id = _config.ParentPageId },
             ["properties"] = new Dictionary<string, object>
             {
-                ["Title"] = new
+                ["title"] = new
                 {
                     title = new[]
                     {
-                        new { text = new { content = title } }
+                        new { type = "text", text = new { content = title } }
                     }
                 }
             }
         };
 
         if (!string.IsNullOrWhiteSpace(icon))
-            request["icon"] = new { emoji = icon };
+            request["icon"] = new { type = "emoji", emoji = icon };
 
         if (!string.IsNullOrWhiteSpace(cover))
-            request["cover"] = new { external = new { url = cover } };
+            request["cover"] = new { type = "external", external = new { url = cover } };
 
         return request;
     }
@@ -140,14 +146,16 @@ public class ExternalNotionService : INotionService
         {
             properties = new
             {
-                Title = new
+                title = new
                 {
                     title = new[]
                     {
-                        new { text = new { content = title } }
+                        new { type = "text", text = new { content = title } }
                     }
                 }
             }
         };
     }
+
+    #endregion
 }

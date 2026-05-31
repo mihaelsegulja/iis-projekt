@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IISNotionSearch.API.Controllers;
 
-[AuthorizeRoles(Roles.User)]
+[AuthorizeRoles(MinRole = Roles.User)]
 public class NotionController : BaseController
 {
     private readonly INotionService _notionService;

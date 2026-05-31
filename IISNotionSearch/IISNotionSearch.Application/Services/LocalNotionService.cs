@@ -102,6 +102,6 @@ public class LocalNotionService : INotionService
             return StandardResponse<bool>.Create(ResultStatus.Ok, true);
         }
         
-        return StandardResponse<bool>.Create(ResultStatus.NotFound, false, message: "Page not found");
+        return StandardResponse<bool>.Create(ResultStatus.NotFound, message: "Page not found");
     }
 }
