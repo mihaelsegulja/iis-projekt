@@ -20,5 +20,21 @@ public static class DomainMappingExtensions
             InTrash = entity.InTrash
         };
     }
+    
+    public static NotionObject ToEntity(this NotionObjectDto dto)
+    {
+        return new NotionObject
+        {
+            NotionId = dto.NotionId,
+            ObjectType = dto.ObjectType,
+            Title = dto.Title,
+            Url = dto.Url,
+            Icon = dto.Icon,
+            Cover = dto.Cover,
+            CreatedTime = dto.CreatedTime,
+            LastEditedTime = dto.LastEditedTime,
+            InTrash = dto.InTrash
+        };
+    }
 }
 

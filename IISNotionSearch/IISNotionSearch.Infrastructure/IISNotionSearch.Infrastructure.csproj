@@ -29,6 +29,14 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Content Include="Schemas\**\*" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="JsonSchema.Net" Version="8.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
       <Reference Include="Microsoft.AspNetCore.Http.Abstractions">
         <HintPath>..\..\..\..\..\..\usr\share\dotnet\shared\Microsoft.AspNetCore.App\8.0.25\Microsoft.AspNetCore.Http.Abstractions.dll</HintPath>
       </Reference>
