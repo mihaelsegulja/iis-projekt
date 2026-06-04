@@ -1,0 +1,61 @@
+.layout-container {
+  height: 100vh;
+}
+
+.sidenav {
+  width: 240px;
+}
+
+.sidenav-header {
+  font-weight: 500;
+  font-size: 1.1rem;
+}
+
+.active-link {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.toolbar {
+  gap: 8px;
+}
+
+.app-title {
+  font-weight: 500;
+  font-size: 1.15rem;
+}
+
+.toolbar-spacer {
+  flex: 1 1 auto;
+}
+
+.profile-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.role-chip {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.admin-chip {
+  background: #ff9800 !important;
+  color: #fff !important;
+}
+
+.username {
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+.main-content {
+  flex: 1;
+  padding: 24px;
+}
