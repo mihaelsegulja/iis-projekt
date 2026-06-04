@@ -17,8 +17,8 @@ public static class NotionMappingExtensions
             ObjectType = response.Object,
             Title = title ?? "Untitled",
             Url = response.Url,
-            Icon = null,
-            Cover = null,
+            Icon = ExtractIconString(response.Icon),
+            Cover = ExtractCoverString(response.Cover),
             CreatedTime = response.CreatedTime,
             LastEditedTime = response.LastEditedTime,
             InTrash = response.InTrash
@@ -34,6 +34,8 @@ public static class NotionMappingExtensions
 
         return response.Results.Select(r => r.ToDto());
     }
+
+    #region Private methods
 
     private static string? ExtractTitleFromProperties(Dictionary<string, JsonElement>? properties)
     {
@@ -65,4 +67,41 @@ public static class NotionMappingExtensions
 
         return null;
     }
+
+    private static string? ExtractIconString(JsonElement? icon)
+    {
+        if (icon == null) return null;
+
+        var el = icon.Value;
+        if (!el.TryGetProperty("type", out var typeProp)) return null;
+
+        var type = typeProp.GetString();
+        if (type == "emoji" && el.TryGetProperty("emoji", out var emoji))
+            return emoji.GetString();
+
+        if ((type == "external" || type == "file") &&
+            el.TryGetProperty(type, out var file) &&
+            file.TryGetProperty("url", out var url))
+            return url.GetString();
+
+        return null;
+    }
+
+    private static string? ExtractCoverString(JsonElement? cover)
+    {
+        if (cover == null) return null;
+
+        var el = cover.Value;
+        if (!el.TryGetProperty("type", out var typeProp)) return null;
+
+        var type = typeProp.GetString();
+        if ((type == "external" || type == "file") &&
+            el.TryGetProperty(type, out var file) &&
+            file.TryGetProperty("url", out var url))
+            return url.GetString();
+
+        return null;
+    }
+
+    #endregion
 }

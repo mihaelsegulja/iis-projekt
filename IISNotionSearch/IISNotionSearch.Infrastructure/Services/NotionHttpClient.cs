@@ -47,7 +47,7 @@ public class NotionHttpClient
 
     public async Task TrashPageAsync(string pageId, CancellationToken cancellationToken = default)
     {
-        var request = new { in_trash = true, archived = true };
+        var request = new { in_trash = true };
         var response = await _httpClient.PatchAsJsonAsync($"pages/{pageId}", request, cancellationToken);
         await EnsureSuccessWithBodyAsync(response);
     }

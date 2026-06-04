@@ -13,7 +13,7 @@ public class ImportController : BaseController
         _importService = importService;
     }
 
-    [HttpPost("import")]
+    [HttpPost]
     [Consumes("application/json", "application/xml")]
     public async Task<IActionResult> Import()
     {

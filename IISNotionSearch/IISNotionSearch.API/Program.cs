@@ -2,11 +2,14 @@ using System.Text;
 using System.Text.Json.Serialization;
 using IISNotionSearch.API.Abstractions.Exceptions;
 using IISNotionSearch.API.Extensions;
+using IISNotionSearch.API.GraphQL;
 using IISNotionSearch.Application;
+using IISNotionSearch.Application.Interfaces.Services;
 using IISNotionSearch.Infrastructure;
 using IISNotionSearch.Infrastructure.Grpc;
 using IISNotionSearch.Infrastructure.Services;
 using IISNotionSearch.Repository;
+using SoapCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,7 +43,16 @@ builder.Services.Configure<RouteOptions>(options =>
     options.LowercaseUrls = true;
 });
 
+builder.Services.AddSoapCore();
+builder.Services.AddScoped<INotionSoapService, NotionSoapService>();
+
 builder.Services.AddHttpContextAccessor();
+
+builder.Services
+    .AddGraphQLServer()
+    .AddQueryType<NotionQuery>()
+    .AddMutationType<NotionMutation>()
+    .AddAuthorization();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
@@ -62,5 +74,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapGraphQL();
 app.MapGrpcService<DhmzGrpcService>();
+app.UseSoapEndpoint<INotionSoapService>("/Soap/NotionService.asmx", new SoapEncoderOptions());
 app.Run();
