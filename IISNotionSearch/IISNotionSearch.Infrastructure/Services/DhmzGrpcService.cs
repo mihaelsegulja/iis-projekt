@@ -1,19 +1,22 @@
 using System.Xml.Serialization;
 using Grpc.Core;
+using IISNotionSearch.Application.Configurations;
 using IISNotionSearch.Application.Models;
 using IISNotionSearch.Infrastructure.Grpc;
 using IISNotionSearch.Infrastructure.Models.Dhmz;
+using Microsoft.Extensions.Options;
 
 namespace IISNotionSearch.Infrastructure.Services;
 
 public class DhmzGrpcService : WeatherService.WeatherServiceBase
 {
-    private static readonly TimeSpan DhmzRequestTimeout = TimeSpan.FromSeconds(15);
     private readonly HttpClient _httpClient;
+    private readonly DhmzConfig _dhmzConfig;
 
-    public DhmzGrpcService(HttpClient httpClient)
+    public DhmzGrpcService(HttpClient httpClient, IOptions<DhmzConfig> dhmzConfig)
     {
         _httpClient = httpClient;
+        _dhmzConfig = dhmzConfig.Value;
     }
 
     public override async Task<WeatherResponse> GetWeatherByCity(WeatherRequest request, ServerCallContext context)
@@ -32,12 +35,13 @@ public class DhmzGrpcService : WeatherService.WeatherServiceBase
     {
         try
         {
-            using var timeoutCts = new CancellationTokenSource(DhmzRequestTimeout);
+            var timeout = TimeSpan.FromSeconds(_dhmzConfig.TimeoutSeconds);
+            using var timeoutCts = new CancellationTokenSource(timeout);
             using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCts.Token);
             var token = linkedCts.Token;
 
             var response = await _httpClient.GetAsync(
-                "hrvatska_n.xml",
+                _dhmzConfig.XmlPath,
                 HttpCompletionOption.ResponseHeadersRead,
                 token);
 
@@ -88,7 +92,7 @@ public class DhmzGrpcService : WeatherService.WeatherServiceBase
         {
             return StandardResponse<WeatherResponse>.Create(
                 ResultStatus.InternalError,
-                message: $"DHMZ request timed out after {DhmzRequestTimeout.TotalSeconds:0} seconds.");
+                message: $"DHMZ request timed out after {_dhmzConfig.TimeoutSeconds:0} seconds.");
         }
         catch (HttpRequestException ex)
         {

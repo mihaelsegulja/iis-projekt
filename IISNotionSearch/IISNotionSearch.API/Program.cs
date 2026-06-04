@@ -4,6 +4,7 @@ using IISNotionSearch.API.Abstractions.Exceptions;
 using IISNotionSearch.API.Extensions;
 using IISNotionSearch.API.GraphQL;
 using IISNotionSearch.Application;
+using IISNotionSearch.Application.Configurations;
 using IISNotionSearch.Application.Interfaces.Services;
 using IISNotionSearch.Infrastructure;
 using IISNotionSearch.Infrastructure.Grpc;
@@ -18,19 +19,38 @@ Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwagger();
 
-builder.Services.AddRepository(builder.Configuration);
-builder.Services.AddApplication(builder.Configuration);
-builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddAppConfiguration(builder.Configuration);
+
+var connectionString = builder.Configuration.GetConnectionString();
+var dhmzConfig = builder.Configuration.GetSection("DhmzConfig").Get<DhmzConfig>() ?? new DhmzConfig();
+
+builder.Services.AddRepository(connectionString);
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure(dhmzConfig);
 builder.Services.AddNotionServiceSwitch(builder.Configuration);
 
 builder.Services.AddGrpc();
-var grpcAddress = builder.Configuration["Grpc:WeatherServiceUrl"];
+var grpcAddress = builder.Configuration["GrpcConfig:WeatherServiceUrl"];
 builder.Services.AddGrpcClient<WeatherService.WeatherServiceClient>(options =>
 {
     options.Address = new Uri(grpcAddress!);
 });
 
 builder.Services.AddJwtAuthentication(builder.Configuration);
+
+var corsConfig = builder.Configuration.GetSection("CorsConfig").Get<CorsConfig>() ?? new CorsConfig();
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins(corsConfig.AllowedOrigins)
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+
+        if (corsConfig.AllowCredentials)
+            policy.AllowCredentials();
+    });
+});
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -71,6 +91,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

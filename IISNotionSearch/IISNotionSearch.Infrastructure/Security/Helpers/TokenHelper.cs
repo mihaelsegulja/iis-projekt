@@ -6,6 +6,7 @@ using IISNotionSearch.Application.Configurations;
 using IISNotionSearch.Application.Common.Interfaces.Security;
 using IISNotionSearch.Application.Constants;
 using IISNotionSearch.Domain.Entities;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace IISNotionSearch.Infrastructure.Security.Helpers;
@@ -14,9 +15,9 @@ public class TokenHelper : ITokenHelper
 {
     private readonly JwtConfig _jwtConfig;
 
-    public TokenHelper(JwtConfig jwtConfig)
+    public TokenHelper(IOptions<JwtConfig> jwtConfig)
     {
-        _jwtConfig = jwtConfig;
+        _jwtConfig = jwtConfig.Value;
     }
 
     public string GenerateAccessToken(User user)
