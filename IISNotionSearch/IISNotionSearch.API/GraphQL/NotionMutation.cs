@@ -5,9 +5,9 @@ using IISNotionSearch.Domain.Enums;
 
 namespace IISNotionSearch.API.GraphQL;
 
+[AuthorizeRoles(MinRole = Roles.Admin)]
 public class NotionMutation
 {
-    [AuthorizeRoles(MinRole = Roles.Admin)]
     public async Task<NotionObjectDto?> CreatePage(
         CreateNotionPageDto input,
         [Service] INotionService notionService)
@@ -18,7 +18,6 @@ public class NotionMutation
         return result.Data;
     }
 
-    [AuthorizeRoles(MinRole = Roles.Admin)]
     public async Task<NotionObjectDto?> UpdatePage(
         string id,
         UpdateNotionPageDto input,
@@ -30,7 +29,6 @@ public class NotionMutation
         return result.Data;
     }
 
-    [AuthorizeRoles(MinRole = Roles.Admin)]
     public async Task<bool> DeletePage(
         string id,
         [Service] INotionService notionService)

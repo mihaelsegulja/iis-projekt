@@ -2,27 +2,27 @@
   <mat-drawer #drawer mode="side" opened class="sidenav">
     <mat-toolbar class="sidenav-header">Menu</mat-toolbar>
     <mat-nav-list>
-      <a mat-list-item routerLink="/" routerLinkActive="active-link" (click)="drawer.close()">
+      <a mat-list-item routerLink="/" routerLinkActive="active-link">
         <mat-icon matListItemIcon>search</mat-icon>
         <span matListItemTitle>Notion Search</span>
       </a>
-      <a mat-list-item routerLink="/new" routerLinkActive="active-link" (click)="drawer.close()">
+      <a mat-list-item routerLink="/new" routerLinkActive="active-link">
         <mat-icon matListItemIcon>add_circle</mat-icon>
         <span matListItemTitle>Create Page</span>
       </a>
-      <a mat-list-item routerLink="/weather" routerLinkActive="active-link" (click)="drawer.close()">
+      <a mat-list-item routerLink="/weather" routerLinkActive="active-link">
         <mat-icon matListItemIcon>cloud</mat-icon>
         <span matListItemTitle>Weather</span>
       </a>
-      <a mat-list-item routerLink="/import" routerLinkActive="active-link" (click)="drawer.close()">
+      <a mat-list-item routerLink="/import" routerLinkActive="active-link">
         <mat-icon matListItemIcon>upload_file</mat-icon>
         <span matListItemTitle>Import</span>
       </a>
-      <a mat-list-item routerLink="/graphql" routerLinkActive="active-link" (click)="drawer.close()">
+      <a mat-list-item routerLink="/graphql" routerLinkActive="active-link">
         <mat-icon matListItemIcon>code</mat-icon>
         <span matListItemTitle>GraphQL</span>
       </a>
-      <a mat-list-item routerLink="/soap" routerLinkActive="active-link" (click)="drawer.close()">
+      <a mat-list-item routerLink="/soap" routerLinkActive="active-link">
         <mat-icon matListItemIcon>api</mat-icon>
         <span matListItemTitle>SOAP / XPath</span>
       </a>
@@ -31,7 +31,7 @@
 
   <mat-sidenav-content class="content">
     <mat-toolbar class="toolbar">
-      <button mat-icon-button (click)="drawer.toggle()" aria-label="Toggle menu">
+      <button mat-icon-button (click)="drawer.toggle()">
         <mat-icon>menu</mat-icon>
       </button>
       <span class="app-title">IIS Notion Search</span>
