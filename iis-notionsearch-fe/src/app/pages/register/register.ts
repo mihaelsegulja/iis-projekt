@@ -20,57 +20,8 @@ import { AuthService } from '../../services/auth.service';
     MatButtonModule,
     MatProgressSpinnerModule,
   ],
-  template: `
-    <div class="auth-container">
-      <mat-card class="auth-card">
-        <mat-card-header><mat-card-title>Create Account</mat-card-title></mat-card-header>
-        <mat-card-content>
-          <form [formGroup]="form" (ngSubmit)="onSubmit()">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Username</mat-label>
-              <input matInput formControlName="username" autocomplete="username" />
-              @if (form.get('username')?.hasError('required') && form.get('username')?.touched) {
-                <mat-error>Username is required</mat-error>
-              }
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Password</mat-label>
-              <input matInput type="password" formControlName="password" autocomplete="new-password" />
-              @if (form.get('password')?.hasError('required') && form.get('password')?.touched) {
-                <mat-error>Password is required</mat-error>
-              }
-              @if (form.get('password')?.hasError('minlength') && form.get('password')?.touched) {
-                <mat-error>At least 6 characters</mat-error>
-              }
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Confirm Password</mat-label>
-              <input matInput type="password" formControlName="confirmPassword" autocomplete="new-password" />
-              @if (form.get('confirmPassword')?.hasError('required') && form.get('confirmPassword')?.touched) {
-                <mat-error>Confirm your password</mat-error>
-              }
-            </mat-form-field>
-            @if (form.hasError('mismatch')) {
-              <div class="error-message">Passwords do not match</div>
-            }
-            @if (errorMessage) {
-              <div class="error-message">{{ errorMessage }}</div>
-            }
-            <button mat-raised-button color="primary" type="submit" class="full-width" [disabled]="form.invalid || loading">
-              @if (loading) { <mat-spinner diameter="20" /> } @else { Register }
-            </button>
-          </form>
-        </mat-card-content>
-        <mat-card-actions><a mat-button routerLink="/login" color="primary">Already have an account? Sign In</a></mat-card-actions>
-      </mat-card>
-    </div>
-  `,
-  styles: `
-    .auth-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-    .auth-card { width: 100%; max-width: 400px; padding: 16px; }
-    .full-width { width: 100%; }
-    .error-message { color: #f44336; font-size: 0.875rem; margin-bottom: 16px; }
-  `,
+  templateUrl: 'register.html',
+  styleUrl: 'register.scss',
 })
 export class RegisterPage {
   private fb = inject(FormBuilder);

@@ -5,6 +5,6 @@ import { MatCardModule } from '@angular/material/card';
   selector: 'app-graphql-page',
   standalone: true,
   imports: [MatCardModule],
-  template: `<mat-card><mat-card-content><p>GraphQL — coming soon</p></mat-card-content></mat-card>`,
+  templateUrl: 'graphql.html',
 })
 export class GraphqlPage {}

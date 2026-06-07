@@ -1,8 +1,8 @@
-<mat-drawer-container class="layout-container" autosize>
-  <mat-drawer #drawer mode="side" opened class="sidenav">
+<div class="app-layout">
+  <aside class="sidenav">
     <mat-toolbar class="sidenav-header">Menu</mat-toolbar>
     <mat-nav-list>
-      <a mat-list-item routerLink="/" routerLinkActive="active-link">
+      <a mat-list-item routerLink="/search" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="active-link">
         <mat-icon matListItemIcon>search</mat-icon>
         <span matListItemTitle>Notion Search</span>
       </a>
@@ -27,13 +27,10 @@
         <span matListItemTitle>SOAP / XPath</span>
       </a>
     </mat-nav-list>
-  </mat-drawer>
+  </aside>
 
-  <mat-sidenav-content class="content">
+  <div class="content-wrapper">
     <mat-toolbar class="toolbar">
-      <button mat-icon-button (click)="drawer.toggle()">
-        <mat-icon>menu</mat-icon>
-      </button>
       <span class="app-title">IIS Notion Search</span>
       <span class="toolbar-spacer"></span>
 
@@ -53,5 +50,5 @@
     <main class="main-content">
       <router-outlet />
     </main>
-  </mat-sidenav-content>
-</mat-drawer-container>
+  </div>
+</div>

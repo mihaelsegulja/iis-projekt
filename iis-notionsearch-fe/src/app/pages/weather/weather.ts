@@ -5,6 +5,6 @@ import { MatCardModule } from '@angular/material/card';
   selector: 'app-weather-page',
   standalone: true,
   imports: [MatCardModule],
-  template: `<mat-card><mat-card-content><p>Weather — coming soon</p></mat-card-content></mat-card>`,
+  templateUrl: 'weather.html',
 })
 export class WeatherPage {}

@@ -1,62 +1,59 @@
-.layout-container {
+.app-layout {
+  display: flex;
   height: 100vh;
+  background: var(--mat-sys-background);
+  color: var(--mat-sys-on-background);
 }
-
 .sidenav {
   width: 240px;
+  flex-shrink: 0;
+  background: var(--mat-sys-surface-container-low);
+  color: var(--mat-sys-on-surface);
 }
-
 .sidenav-header {
   font-weight: 500;
   font-size: 1.1rem;
 }
-
 .active-link {
-  background: rgba(0, 0, 0, 0.06);
+  background: var(--mat-sys-secondary-container) !important;
 }
-
-.content {
+.content-wrapper {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  margin-left: 0 !important;
+  flex: 1;
+  min-width: 0;
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
 }
-
 .toolbar {
   gap: 8px;
 }
-
 .app-title {
   font-weight: 500;
   font-size: 1.15rem;
 }
-
 .toolbar-spacer {
   flex: 1 1 auto;
 }
-
 .profile-section {
   display: flex;
   align-items: center;
   gap: 12px;
 }
-
 .role-chip {
   font-size: 0.75rem;
   font-weight: 500;
 }
-
 .admin-chip {
   background: #ff9800 !important;
   color: #fff !important;
 }
-
 .username {
   font-size: 0.9rem;
   font-weight: 400;
 }
-
 .main-content {
   flex: 1;
   padding: 24px;
+  overflow-y: auto;
 }

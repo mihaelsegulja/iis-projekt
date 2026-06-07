@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
@@ -7,12 +7,12 @@ import {
   StandardResponse,
   UpdateNotionPageDto,
 } from '../models/models';
+import { API_URL } from '../tokens/api-url.token';
 
 @Injectable({ providedIn: 'root' })
 export class NotionService {
-  private readonly baseUrl = 'api/notion';
-
-  constructor(private http: HttpClient) {}
+  private readonly http = inject(HttpClient);
+  private readonly baseUrl = `${inject(API_URL)}/api/notion`;
 
   search(query?: string | null): Observable<StandardResponse<NotionObject[]>> {
     let params = new HttpParams();

@@ -5,6 +5,6 @@ import { MatCardModule } from '@angular/material/card';
   selector: 'app-import-page',
   standalone: true,
   imports: [MatCardModule],
-  template: `<mat-card><mat-card-content><p>Import — coming soon</p></mat-card-content></mat-card>`,
+  templateUrl: 'import.html',
 })
 export class ImportPage {}

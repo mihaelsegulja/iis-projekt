@@ -1,10 +1,12 @@
 import { Routes } from '@angular/router';
 import { Layout } from './layout/layout';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   {
     path: '',
     component: Layout,
+    canActivate: [authGuard],
     children: [
       { path: '', redirectTo: 'search', pathMatch: 'full' },
       {
@@ -31,10 +33,6 @@ export const routes: Routes = [
         path: 'soap',
         loadComponent: () => import('./pages/soap/soap').then((m) => m.SoapPage),
       },
-      {
-        path: ':id',
-        loadComponent: () => import('./pages/page-form/page-form').then((m) => m.PageFormPage),
-      },
     ],
   },
   {
@@ -45,5 +43,5 @@ export const routes: Routes = [
     path: 'register',
     loadComponent: () => import('./pages/register/register').then((m) => m.RegisterPage),
   },
-  { path: '**', redirectTo: 'search' },
+  { path: '**', redirectTo: '' },
 ];

@@ -1,13 +1,13 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { StandardResponse, ImportResult } from '../models/models';
+import { API_URL } from '../tokens/api-url.token';
 
 @Injectable({ providedIn: 'root' })
 export class ImportService {
-  private readonly baseUrl = 'api/import';
-
-  constructor(private http: HttpClient) {}
+  private readonly http = inject(HttpClient);
+  private readonly baseUrl = `${inject(API_URL)}/api/import`;
 
   importFile(file: File, contentType: string): Observable<StandardResponse<ImportResult>> {
     const formData = new FormData();

@@ -1,96 +1,78 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
-import {
-  AuthResponse,
-  LoginRequest,
-  RegisterRequest,
-  StandardResponse,
-} from '../models/models';
+import { AuthResponse, LoginRequest, RegisterRequest, StandardResponse } from '../models/models';
 import { parseJwt } from '../utils/jwt-utils';
+import { API_URL } from '../tokens/api-url.token';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly baseUrl = 'api/auth';
-  private readonly accessTokenKey = 'accessToken';
+  private readonly http = inject(HttpClient);
+  private readonly router = inject(Router);
+  private readonly baseUrl = `${inject(API_URL)}/api/auth`;
 
-  readonly isAuthenticated = signal(false);
-  readonly isAdmin = signal(false);
+  private _accessToken: string | null = null;
+
+  readonly isAuthenticated = signal<boolean>(false);
+  readonly isAdmin = signal<boolean>(false);
   readonly username = signal<string | null>(null);
-
-  constructor(
-    private http: HttpClient,
-    private router: Router,
-  ) {
-    this.restoreSession();
-  }
 
   login(request: LoginRequest): Observable<StandardResponse<AuthResponse>> {
     return this.http
-      .post<StandardResponse<AuthResponse>>(`${this.baseUrl}/login`, request)
+      .post<StandardResponse<AuthResponse>>(`${this.baseUrl}/login`, request, { withCredentials: true })
       .pipe(tap((res) => this.handleAuthResponse(res)));
   }
 
   register(request: RegisterRequest): Observable<StandardResponse<AuthResponse>> {
     return this.http
-      .post<StandardResponse<AuthResponse>>(`${this.baseUrl}/register`, request)
+      .post<StandardResponse<AuthResponse>>(`${this.baseUrl}/register`, request, { withCredentials: true })
       .pipe(tap((res) => this.handleAuthResponse(res)));
   }
 
   refresh(): Observable<StandardResponse<AuthResponse>> {
     return this.http
-      .post<StandardResponse<AuthResponse>>(`${this.baseUrl}/refresh`, {})
+      .post<StandardResponse<AuthResponse>>(`${this.baseUrl}/refresh`, {}, { withCredentials: true })
       .pipe(tap((res) => this.handleAuthResponse(res)));
   }
 
-  signOut(): Observable<StandardResponse<boolean>> {
-    return this.http
-      .post<StandardResponse<boolean>>(`${this.baseUrl}/signout`, {})
-      .pipe(tap(() => {
-        this.clearToken();
-        this.router.navigate(['/login']);
-      }));
+  signOut(): void {
+    this.clearToken();
+    this.http
+      .post<StandardResponse<boolean>>(`${this.baseUrl}/signout`, {}, { withCredentials: true })
+      .subscribe();
+    this.router.navigate(['/login']);
   }
 
   getAccessToken(): string | null {
-    return localStorage.getItem(this.accessTokenKey);
+    return this._accessToken;
   }
 
   private handleAuthResponse(res: StandardResponse<AuthResponse>): void {
     if (!res.success || !res.data) return;
+
     const token = res.data.accessToken;
-    localStorage.setItem(this.accessTokenKey, token);
-    this.applyToken(token);
-  }
-
-  private restoreSession(): void {
-    const token = this.getAccessToken();
-    if (!token) return;
-
+    this._accessToken = token;
     const payload = parseJwt(token);
-    if (!payload || !payload['exp']) {
-      this.clearToken();
-      return;
-    }
+    const role = (payload?.['role'] as string);
+    const user = (payload?.['unique_name'] as string);
 
-    if (Date.now() >= (payload['exp'] as number) * 1000) {
-      this.clearToken();
-      return;
-    }
-
-    this.applyToken(token);
-  }
-
-  private applyToken(token: string): void {
-    const payload = parseJwt(token);
     this.isAuthenticated.set(true);
-    this.isAdmin.set((payload?.['role'] as string) === 'Admin');
-    this.username.set((payload?.['unique_name'] as string) ?? null);
+    this.isAdmin.set(role === 'Admin');
+    this.username.set(user);
   }
 
-  private clearToken(): void {
-    localStorage.removeItem(this.accessTokenKey);
+  handleUnauthorized(): void {
+    this.refresh().subscribe({
+      error: () => {
+        this.clearToken();
+        this.router.navigate(['/login']);
+      }
+    });
+  }
+
+  clearToken(): void {
+    this._accessToken = null;
     this.isAuthenticated.set(false);
     this.isAdmin.set(false);
     this.username.set(null);

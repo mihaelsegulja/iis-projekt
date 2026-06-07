@@ -5,6 +5,6 @@ import { MatCardModule } from '@angular/material/card';
   selector: 'app-search-page',
   standalone: true,
   imports: [MatCardModule],
-  template: `<mat-card><mat-card-content><p>Notion Search — coming soon</p></mat-card-content></mat-card>`,
+  templateUrl: 'search.html',
 })
 export class SearchPage {}

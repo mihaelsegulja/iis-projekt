@@ -5,6 +5,6 @@ import { MatCardModule } from '@angular/material/card';
   selector: 'app-soap-page',
   standalone: true,
   imports: [MatCardModule],
-  template: `<mat-card><mat-card-content><p>SOAP / XPath — coming soon</p></mat-card-content></mat-card>`,
+  templateUrl: 'soap.html',
 })
 export class SoapPage {}

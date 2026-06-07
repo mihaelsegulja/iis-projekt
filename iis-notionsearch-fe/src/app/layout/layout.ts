@@ -1,12 +1,12 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { MatSidenavModule } from '@angular/material/sidenav';
+import { Component, inject } from '@angular/core';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { AuthService } from '../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-layout',
@@ -15,27 +15,28 @@ import { AuthService } from '../services/auth.service';
     RouterOutlet,
     RouterLink,
     RouterLinkActive,
-    MatSidenavModule,
     MatToolbarModule,
     MatListModule,
     MatIconModule,
     MatButtonModule,
     MatChipsModule,
   ],
-  templateUrl: `layout.html`,
-  styleUrl: `layout.scss`,
+  templateUrl: 'layout.html',
+  styleUrl: 'layout.scss',
 })
-export class Layout implements OnInit {
+export class Layout {
   readonly auth = inject(AuthService);
-  private router = inject(Router);
+  private readonly router = inject(Router);
 
-  ngOnInit(): void {
-    if (!this.auth.isAuthenticated()) {
-      this.router.navigate(['/login']);
-    }
+  constructor() {
+    setTimeout(() => {
+      if (!this.auth.isAuthenticated()) {
+        this.router.navigateByUrl('/login');
+      }
+    });
   }
 
   signOut() {
-    this.auth.signOut().subscribe();
+    this.auth.signOut();
   }
 }
