@@ -18,6 +18,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/page-form/page-form').then((m) => m.PageFormPage),
       },
       {
+        path: 'edit/:id',
+        loadComponent: () => import('./pages/page-form/page-form').then((m) => m.PageFormPage),
+      },
+      {
         path: 'weather',
         loadComponent: () => import('./pages/weather/weather').then((m) => m.WeatherPage),
       },
@@ -32,7 +36,7 @@ export const routes: Routes = [
       {
         path: 'soap',
         loadComponent: () => import('./pages/soap/soap').then((m) => m.SoapPage),
-      },
+      }
     ],
   },
   {

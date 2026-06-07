@@ -1,10 +1,110 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatRadioModule } from '@angular/material/radio';
+import { EditorComponent } from '../../shared/editor/editor';
+import { API_URL } from '../../tokens/api-url.token';
+
+const SNIPPETS: Record<string, string> = {
+  json: '{\n  "objectType": "page",\n  "title": "My Page"\n}',
+  xml: '<?xml version="1.0" encoding="utf-8"?>\n<NotionObject>\n  <ObjectType>page</ObjectType>\n  <Title>My Page</Title>\n</NotionObject>',
+};
 
 @Component({
   selector: 'app-import-page',
   standalone: true,
-  imports: [MatCardModule],
-  templateUrl: 'import.html',
+  imports: [FormsModule, MatCardModule, MatButtonModule, MatProgressSpinnerModule, MatRadioModule, EditorComponent],
+  template: `
+    <mat-card>
+      <mat-card-header><mat-card-title>Import</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <mat-radio-group [(ngModel)]="contentType" class="radio-group">
+          <mat-radio-button value="application/json">JSON</mat-radio-button>
+          <mat-radio-button value="application/xml">XML</mat-radio-button>
+        </mat-radio-group>
+
+        <div class="actions">
+          <input #fileInput type="file" (change)="onFileSelect($event)" accept=".json,.xml" hidden />
+          <button mat-stroked-button (click)="fileInput.click()">Choose File</button>
+          <span class="file-name">{{ fileName }}</span>
+          <button mat-stroked-button (click)="loadSnippet()">Load {{ contentType === 'application/json' ? 'JSON' : 'XML' }} Snippet</button>
+        </div>
+
+        <app-editor [(code)]="content" [placeholder]="'Paste or load content here...'" />
+
+        <div class="actions">
+          <button mat-raised-button color="primary" (click)="importContent()" [disabled]="!content.trim() || loading">
+            @if (loading) { <mat-spinner diameter="20" /> } @else { Import }
+          </button>
+        </div>
+
+        @if (result) {
+          <mat-card class="result-card">
+            <p>Success: {{ result.successCount }} &middot; Errors: {{ result.errorCount }}</p>
+            @if (result.errors?.length) {
+              <ul>@for (e of result.errors; track e) { <li>{{ e }}</li> }</ul>
+            }
+          </mat-card>
+        }
+      </mat-card-content>
+    </mat-card>
+  `,
+  styles: `
+    .radio-group { display: flex; gap: 16px; margin-bottom: 12px; }
+    .actions { display: flex; align-items: center; gap: 12px; margin: 12px 0; }
+    .file-name { font-size: 0.875rem; color: #666; }
+    .result-card { margin-top: 16px; padding: 16px; background: #f5f5f5; }
+  `,
 })
-export class ImportPage {}
+export class ImportPage {
+  private http = inject(HttpClient);
+  private apiUrl = inject(API_URL);
+
+  contentType = 'application/json';
+  content = '';
+  fileName = '';
+  loading = false;
+  result: { successCount: number; errorCount: number; errors: string[] | null } | null = null;
+
+  onFileSelect(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    this.fileName = file.name;
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.content = reader.result as string;
+      this.contentType = file.name.endsWith('.xml') ? 'application/xml' : 'application/json';
+    };
+    reader.readAsText(file);
+  }
+
+  loadSnippet(): void {
+    this.content = SNIPPETS[this.contentType === 'application/json' ? 'json' : 'xml'];
+  }
+
+  importContent(): void {
+    if (!this.content.trim()) return;
+    this.loading = true;
+    this.result = null;
+
+    this.http
+      .post<{ success: boolean; data: { successCount: number; errorCount: number; errors: string[] | null } | null }>(
+        `${this.apiUrl}/api/import`,
+        this.content,
+        { headers: new HttpHeaders({ 'Content-Type': this.contentType }) },
+      )
+      .subscribe({
+        next: (res) => {
+          this.result = res.data ?? { successCount: 0, errorCount: 0, errors: ['No data returned'] };
+          this.loading = false;
+        },
+        error: (err) => {
+          this.result = { successCount: 0, errorCount: 1, errors: [err.error?.message ?? err.message ?? 'Request failed'] };
+          this.loading = false;
+        },
+      });
+  }
+}
