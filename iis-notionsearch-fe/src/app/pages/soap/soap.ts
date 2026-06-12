@@ -23,35 +23,8 @@ const SOAP_TEMPLATE = (term: string) => `<?xml version="1.0" encoding="utf-8"?>
   selector: 'app-soap-page',
   standalone: true,
   imports: [FormsModule, MatCardModule, MatButtonModule, MatProgressSpinnerModule, MatFormFieldModule, MatInputModule, EditorComponent],
-  template: `
-    <mat-card>
-      <mat-card-header><mat-card-title>SOAP / XPath</mat-card-title></mat-card-header>
-      <mat-card-content>
-        <mat-form-field appearance="outline" class="search-field">
-          <mat-label>Search term (XPath filter)</mat-label>
-          <input matInput [(ngModel)]="searchTerm" placeholder="e.g. notion" (keyup.enter)="search()" />
-        </mat-form-field>
-        <div class="actions">
-          <button mat-raised-button color="primary" (click)="search()" [disabled]="loading">
-            @if (loading) { <mat-spinner diameter="20" /> } @else { Send SOAP Request }
-          </button>
-        </div>
-
-        <app-editor [(code)]="requestXml" placeholder="SOAP XML request (auto-generated)" minHeight="150px" />
-
-        @if (errorMessage) {
-          <div class="error">{{ errorMessage }}</div>
-        }
-
-        <app-editor [code]="responseXml" [isReadonly]="true" placeholder="SOAP XML response" minHeight="200px" />
-      </mat-card-content>
-    </mat-card>
-  `,
-  styles: `
-    .search-field { width: 100%; margin-bottom: 8px; }
-    .actions { display: flex; align-items: center; gap: 16px; margin: 12px 0; }
-    .error { color: #f44336; font-size: 0.875rem; margin: 8px 0; }
-  `,
+  templateUrl: 'soap.html',
+  styleUrl: 'soap.scss',
 })
 export class SoapPage {
   private http = inject(HttpClient);

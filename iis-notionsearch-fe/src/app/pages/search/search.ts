@@ -21,27 +21,8 @@ import { DataGridComponent, GridColumn, GridAction } from '../../shared/data-gri
     MatIconModule,
     DataGridComponent,
   ],
-  template: `
-    <app-data-grid
-      [columns]="columns"
-      [data]="results()"
-      [loading]="loading()"
-      [actions]="actions"
-    >
-      <div grid-toolbar>
-        <mat-form-field appearance="outline" subscriptSizing="dynamic">
-          <mat-label>Search Notion pages</mat-label>
-          <input matInput [(ngModel)]="query" placeholder="Search by title..." (keyup.enter)="search()" />
-        </mat-form-field>
-        <button mat-raised-button color="primary" (click)="search()" [disabled]="loading()">
-          <mat-icon>search</mat-icon> Search
-        </button>
-        <button mat-stroked-button (click)="navigateTo('/new')">
-          <mat-icon>add</mat-icon> Create Page
-        </button>
-      </div>
-    </app-data-grid>
-  `,
+  templateUrl: 'search.html',
+  styleUrl: 'search.scss',
 })
 export class SearchPage implements OnInit {
   private readonly notion = inject(NotionService);

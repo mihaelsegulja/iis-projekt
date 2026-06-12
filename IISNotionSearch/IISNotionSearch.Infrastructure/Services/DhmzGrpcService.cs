@@ -38,18 +38,8 @@ public class DhmzGrpcService : WeatherService.WeatherServiceBase
             var timeout = TimeSpan.FromSeconds(_dhmzConfig.TimeoutSeconds);
             using var timeoutCts = new CancellationTokenSource(timeout);
             using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCts.Token);
-            var token = linkedCts.Token;
 
-            var response = await _httpClient.GetAsync(
-                _dhmzConfig.XmlPath,
-                HttpCompletionOption.ResponseHeadersRead,
-                token);
-
-            response.EnsureSuccessStatusCode();
-
-            var xmlStream = await response.Content.ReadAsStreamAsync(token);
-            var serializer = new XmlSerializer(typeof(DhmzWeatherXml));
-            var weatherData = (DhmzWeatherXml)serializer.Deserialize(xmlStream)!;
+            var weatherData = await FetchWeatherDataAsync(linkedCts.Token);
 
             var filteredGradovi = weatherData.Gradovi
                 .Where(g => g.GradIme.Contains(request.CityName, StringComparison.OrdinalIgnoreCase))
@@ -106,5 +96,19 @@ public class DhmzGrpcService : WeatherService.WeatherServiceBase
                 ResultStatus.InternalError,
                 message: $"Error fetching DHMZ data: {ex.Message}");
         }
+    }
+
+    private async Task<DhmzWeatherXml> FetchWeatherDataAsync(CancellationToken cancellationToken)
+    {
+        var response = await _httpClient.GetAsync(
+            _dhmzConfig.XmlPath,
+            HttpCompletionOption.ResponseHeadersRead,
+            cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+
+        await using var xmlStream = await response.Content.ReadAsStreamAsync(cancellationToken);
+        var serializer = new XmlSerializer(typeof(DhmzWeatherXml));
+        return (DhmzWeatherXml)serializer.Deserialize(xmlStream)!;
     }
 }

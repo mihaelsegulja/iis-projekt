@@ -1,0 +1,53 @@
+.spinner-row {
+  display: flex;
+  justify-content: center;
+  padding: 24px;
+}
+
+.error {
+  color: #f44336;
+  font-size: 0.875rem;
+  margin: 8px 0;
+}
+
+.page-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.icon-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.icon-url-field {
+  flex: 1;
+}
+
+.section-divider {
+  margin: 8px 0;
+}
+
+.meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  font-size: 0.875rem;
+}
+
+.meta-grid a {
+  color: var(--mat-sys-primary);
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}

@@ -1,0 +1,15 @@
+.search-field {
+  width: 100%;
+  margin-bottom: 8px;
+}
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 12px 0;
+}
+.error {
+  color: #f44336;
+  font-size: 0.875rem;
+  margin: 8px 0;
+}

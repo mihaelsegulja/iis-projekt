@@ -1,1 +1,15 @@
-<mat-card><mat-card-content><p>GraphQL — coming soon</p></mat-card-content></mat-card>
+<mat-card>
+  <mat-card-header><mat-card-title>GraphQL Query</mat-card-title></mat-card-header>
+  <mat-card-content>
+    <app-editor [(code)]="query" placeholder="{ pages { title } }" minHeight="150px" />
+    <div class="actions">
+      <button mat-raised-button color="primary" (click)="execute()" [disabled]="loading">
+        @if (loading) { <mat-spinner diameter="20" /> } @else { Execute }
+      </button>
+      @if (errorMessage) {
+        <span class="error">{{ errorMessage }}</span>
+      }
+    </div>
+    <app-editor [code]="response" [isReadonly]="true" placeholder="Response" />
+  </mat-card-content>
+</mat-card>

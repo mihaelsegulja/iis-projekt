@@ -1,4 +1,22 @@
-.auth-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-.auth-card { width: 100%; max-width: 400px; padding: 16px; }
-.full-width { width: 100%; }
-.error-message { color: #f44336; font-size: 0.875rem; margin-bottom: 16px; }
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 16px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.error-message {
+  color: #f44336;
+  font-size: 0.875rem;
+  margin-bottom: 16px;
+}

@@ -17,47 +17,8 @@ const SNIPPETS: Record<string, string> = {
   selector: 'app-import-page',
   standalone: true,
   imports: [FormsModule, MatCardModule, MatButtonModule, MatProgressSpinnerModule, MatRadioModule, EditorComponent],
-  template: `
-    <mat-card>
-      <mat-card-header><mat-card-title>Import</mat-card-title></mat-card-header>
-      <mat-card-content>
-        <mat-radio-group [(ngModel)]="contentType" class="radio-group">
-          <mat-radio-button value="application/json">JSON</mat-radio-button>
-          <mat-radio-button value="application/xml">XML</mat-radio-button>
-        </mat-radio-group>
-
-        <div class="actions">
-          <input #fileInput type="file" (change)="onFileSelect($event)" accept=".json,.xml" hidden />
-          <button mat-stroked-button (click)="fileInput.click()">Choose File</button>
-          <span class="file-name">{{ fileName }}</span>
-          <button mat-stroked-button (click)="loadSnippet()">Load {{ contentType === 'application/json' ? 'JSON' : 'XML' }} Snippet</button>
-        </div>
-
-        <app-editor [(code)]="content" [placeholder]="'Paste or load content here...'" />
-
-        <div class="actions">
-          <button mat-raised-button color="primary" (click)="importContent()" [disabled]="!content.trim() || loading">
-            @if (loading) { <mat-spinner diameter="20" /> } @else { Import }
-          </button>
-        </div>
-
-        @if (result) {
-          <mat-card class="result-card">
-            <p>Success: {{ result.successCount }} &middot; Errors: {{ result.errorCount }}</p>
-            @if (result.errors?.length) {
-              <ul>@for (e of result.errors; track e) { <li>{{ e }}</li> }</ul>
-            }
-          </mat-card>
-        }
-      </mat-card-content>
-    </mat-card>
-  `,
-  styles: `
-    .radio-group { display: flex; gap: 16px; margin-bottom: 12px; }
-    .actions { display: flex; align-items: center; gap: 12px; margin: 12px 0; }
-    .file-name { font-size: 0.875rem; color: #666; }
-    .result-card { margin-top: 16px; padding: 16px; background: #f5f5f5; }
-  `,
+  templateUrl: 'import.html',
+  styleUrl: 'import.scss',
 })
 export class ImportPage {
   private http = inject(HttpClient);

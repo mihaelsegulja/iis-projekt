@@ -23,69 +23,8 @@ import { CityWeather } from '../../models/models';
     MatProgressSpinnerModule,
     MatTableModule,
   ],
-  template: `
-    <mat-card>
-      <mat-card-content>
-        <div class="toolbar-row">
-          <mat-form-field appearance="outline" subscriptSizing="dynamic">
-            <mat-label>Search city</mat-label>
-            <input matInput [(ngModel)]="query" placeholder="e.g. Zagreb" (keyup.enter)="search()" />
-          </mat-form-field>
-          <button mat-raised-button color="primary" (click)="search()" [disabled]="loading()">
-            <mat-icon>search</mat-icon> Search
-          </button>
-
-          @if (lastUpdated) {
-            <span class="last-updated">Last updated: {{ lastUpdated }}</span>
-          }
-        </div>
-
-        @if (loading()) {
-          <div class="spinner-row"><mat-spinner diameter="32" /></div>
-        }
-
-        <table mat-table [dataSource]="results()" class="full-width">
-          @for (col of columns; track col.field) {
-            <ng-container [matColumnDef]="col.field">
-              <th mat-header-cell *matHeaderCellDef> {{ col.header }} </th>
-              <td mat-cell *matCellDef="let row"> {{ row[col.field] }} </td>
-            </ng-container>
-          }
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-        </table>
-
-        @if (!results().length && !loading()) {
-          <div class="empty-message">No results.</div>
-        }
-      </mat-card-content>
-    </mat-card>
-  `,
-  styles: `
-    .toolbar-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      padding: 8px 0 16px;
-    }
-    .spinner-row {
-      display: flex;
-      justify-content: center;
-      padding: 24px;
-    }
-    .last-updated {
-      font-size: 0.9rem;
-      margin-left: auto;
-    }
-    .full-width { width: 100%; }
-    .empty-message {
-      text-align: center;
-      padding: 32px;
-      color: rgba(0,0,0,0.5);
-      font-size: 0.9rem;
-    }
-  `,
+  templateUrl: 'weather.html',
+  styleUrl: 'weather.scss',
 })
 export class WeatherPage implements OnInit {
   private readonly weather = inject(WeatherService);

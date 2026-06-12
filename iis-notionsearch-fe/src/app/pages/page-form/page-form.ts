@@ -28,81 +28,8 @@ import { EmojiPickerComponent } from '../../shared/emoji-picker/emoji-picker';
     DatePipe,
     EmojiPickerComponent,
   ],
-  template: `
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>{{ isEdit ? 'Edit Page' : 'Create Page' }}</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        @if (loading()) {
-          <div class="spinner-row"><mat-spinner diameter="32" /></div>
-        }
-
-        @if (errorMessage) {
-          <div class="error">{{ errorMessage }}</div>
-        }
-
-        <form #form="ngForm" (ngSubmit)="submit()" class="page-form">
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Title</mat-label>
-            <input matInput [(ngModel)]="title" name="title" required #titleModel="ngModel" />
-            @if (titleModel.invalid && titleModel.touched) {
-              <mat-error>Title is required</mat-error>
-            }
-          </mat-form-field>
-
-          <div class="icon-row">
-            <app-emoji-picker [(value)]="icon" />
-            <mat-form-field appearance="outline" class="icon-url-field">
-              <mat-label>or image URL</mat-label>
-              <input matInput [(ngModel)]="icon" name="icon" placeholder="https://..." />
-            </mat-form-field>
-          </div>
-
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Cover image URL</mat-label>
-            <input matInput [(ngModel)]="cover" name="cover" placeholder="https://..." />
-          </mat-form-field>
-
-          @if (isEdit && page) {
-            <mat-divider class="section-divider" />
-            <div class="meta-grid">
-              <div><strong>ID:</strong> {{ page.notionId }}</div>
-              <div><strong>URL:</strong> <a [href]="page.url" target="_blank">{{ page.url }}</a></div>
-              <div><strong>Created:</strong> {{ page.createdTime | date: 'medium' }}</div>
-              <div><strong>Last Edited:</strong> {{ page.lastEditedTime | date: 'medium' }}</div>
-              <div><strong>In Trash:</strong> {{ page.inTrash ? 'Yes' : 'No' }}</div>
-            </div>
-          }
-
-          <div class="form-actions">
-            <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || submitting()">
-              {{ isEdit ? 'Save Changes' : 'Create Page' }}
-            </button>
-            <button mat-stroked-button type="button" (click)="cancel()">Cancel</button>
-          </div>
-        </form>
-      </mat-card-content>
-    </mat-card>
-  `,
-  styles: `
-    .spinner-row { display: flex; justify-content: center; padding: 24px; }
-    .error { color: #f44336; font-size: 0.875rem; margin: 8px 0; }
-    .page-form { display: flex; flex-direction: column; gap: 16px; margin-top: 16px; }
-    .full-width { width: 100%; }
-    .icon-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-    }
-    .icon-url-field {
-      flex: 1;
-    }
-    .section-divider { margin: 8px 0; }
-    .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 0.875rem; }
-    .meta-grid a { color: var(--mat-sys-primary); }
-    .form-actions { display: flex; gap: 12px; margin-top: 8px; }
-  `,
+  templateUrl: 'page-form.html',
+  styleUrl: 'page-form.scss',
 })
 export class PageFormPage implements OnInit {
   private readonly route = inject(ActivatedRoute);

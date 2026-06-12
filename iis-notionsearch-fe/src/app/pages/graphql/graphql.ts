@@ -11,27 +11,8 @@ import { API_URL } from '../../tokens/api-url.token';
   selector: 'app-graphql-page',
   standalone: true,
   imports: [FormsModule, MatCardModule, MatButtonModule, MatProgressSpinnerModule, EditorComponent],
-  template: `
-    <mat-card>
-      <mat-card-header><mat-card-title>GraphQL Query</mat-card-title></mat-card-header>
-      <mat-card-content>
-        <app-editor [(code)]="query" placeholder="{ pages { title } }" minHeight="150px" />
-        <div class="actions">
-          <button mat-raised-button color="primary" (click)="execute()" [disabled]="loading">
-            @if (loading) { <mat-spinner diameter="20" /> } @else { Execute }
-          </button>
-          @if (errorMessage) {
-            <span class="error">{{ errorMessage }}</span>
-          }
-        </div>
-        <app-editor [code]="response" [isReadonly]="true" placeholder="Response" />
-      </mat-card-content>
-    </mat-card>
-  `,
-  styles: `
-    .actions { display: flex; align-items: center; gap: 16px; margin: 12px 0; }
-    .error { color: #f44336; font-size: 0.875rem; }
-  `,
+  templateUrl: 'graphql.html',
+  styleUrl: 'graphql.scss',
 })
 export class GraphqlPage {
   private http = inject(HttpClient);

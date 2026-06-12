@@ -1,7 +1,5 @@
 using System.Net;
-using System.Net.Security;
 using System.Net.Sockets;
-using System.Security.Authentication;
 using IISNotionSearch.Application.Common.Interfaces.Security;
 using IISNotionSearch.Application.Configurations;
 using IISNotionSearch.Application.Interfaces.Common;
@@ -47,53 +45,17 @@ public static class DependencyInjection
     {
         return new SocketsHttpHandler
         {
-            ConnectCallback = async (context, cancellationToken) =>
+            ConnectCallback = async (context, ct) =>
             {
-                var host = context.DnsEndPoint.Host;
-                var port = context.DnsEndPoint.Port;
-                var addresses = await Dns.GetHostAddressesAsync(host, cancellationToken);
-                var orderedAddresses = addresses
-                    .OrderByDescending(address => address.AddressFamily == AddressFamily.InterNetwork)
-                    .ToList();
+                var addresses = await Dns.GetHostAddressesAsync(context.DnsEndPoint.Host, ct);
+                var ipv4 = addresses.Where(a => a.AddressFamily == AddressFamily.InterNetwork).ToArray();
 
-                Exception? lastException = null;
+                if (ipv4.Length == 0)
+                    ipv4 = addresses;
 
-                foreach (var address in orderedAddresses)
-                {
-                    var socket = new Socket(address.AddressFamily, SocketType.Stream, ProtocolType.Tcp)
-                    {
-                        NoDelay = true
-                    };
-
-                    try
-                    {
-                        await socket.ConnectAsync(new IPEndPoint(address, port), cancellationToken);
-                        Stream stream = new NetworkStream(socket, ownsSocket: true);
-
-                        if (context.InitialRequestMessage?.RequestUri?.Scheme == Uri.UriSchemeHttps)
-                        {
-                            var sslStream = new SslStream(stream, leaveInnerStreamOpen: false);
-                            await sslStream.AuthenticateAsClientAsync(
-                                new SslClientAuthenticationOptions
-                                {
-                                    TargetHost = host,
-                                    EnabledSslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13
-                                },
-                                cancellationToken);
-
-                            return sslStream;
-                        }
-
-                        return stream;
-                    }
-                    catch (Exception ex)
-                    {
-                        lastException = ex;
-                        socket.Dispose();
-                    }
-                }
-
-                throw new HttpRequestException($"Unable to connect to {host}:{port}", lastException);
+                var socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
+                await socket.ConnectAsync(ipv4, context.DnsEndPoint.Port, ct);
+                return new NetworkStream(socket, ownsSocket: true);
             }
         };
     }

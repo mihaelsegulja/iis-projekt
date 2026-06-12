@@ -1,0 +1,23 @@
+.toolbar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 8px 0 16px;
+}
+.spinner-row {
+  display: flex;
+  justify-content: center;
+  padding: 24px;
+}
+.last-updated {
+  font-size: 0.9rem;
+  margin-left: auto;
+}
+.full-width { width: 100%; }
+.empty-message {
+  text-align: center;
+  padding: 32px;
+  color: rgba(0,0,0,0.5);
+  font-size: 0.9rem;
+}
