@@ -10,6 +10,7 @@ export interface GridColumn<T = any> {
   field: string;
   header: string;
   width?: string;
+  format?: (value: any, row: T) => string;
 }
 
 export interface GridAction<T = any> {
@@ -52,17 +53,17 @@ export interface GridAction<T = any> {
                   {{ col.header }}
                 </th>
                 <td mat-cell *matCellDef="let row" [style.width]="col.width">
-                  {{ row[col.field] }}
+                  {{ col.format ? col.format(row[col.field], row) : row[col.field] }}
                 </td>
               </ng-container>
             }
 
             @if (actions.length) {
               <ng-container matColumnDef="actions">
-                <th mat-header-cell *matHeaderCellDef style="width:100px;text-align:right">
+                <th mat-header-cell *matHeaderCellDef style="width:140px;text-align:right">
                   Actions
                 </th>
-                <td mat-cell *matCellDef="let row" style="text-align:right;white-space:nowrap">
+                <td mat-cell *matCellDef="let row" style="text-align:right;white-space:nowrap;overflow:visible">
                   @for (action of actions; track action.label) {
                     @if (!action.visible || action.visible(row)) {
                       <button
@@ -71,7 +72,7 @@ export interface GridAction<T = any> {
                         [matTooltip]="action.label"
                         (click)="action.onClick(row)"
                       >
-                        <mat-icon>{{ action.icon }}</mat-icon>
+                        <mat-icon [fontIcon]="action.icon"></mat-icon>
                       </button>
                     }
                   }

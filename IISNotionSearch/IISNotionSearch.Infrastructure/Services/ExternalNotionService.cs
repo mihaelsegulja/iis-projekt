@@ -55,8 +55,7 @@ public class ExternalNotionService : INotionService
     {
         try
         {
-            var title = string.IsNullOrWhiteSpace(request.Title) ? "New Page" : request.Title;
-            var apiRequest = BuildCreateRequest(title, request.Icon, request.Cover);
+            var apiRequest = BuildCreateRequest(request, _config.ParentPageId);
             var response = await _httpClient.CreatePageAsync(apiRequest);
             var dto = response?.ToDto();
 
@@ -78,7 +77,7 @@ public class ExternalNotionService : INotionService
     {
         try
         {
-            var apiRequest = BuildUpdateRequest(request.Title);
+            var apiRequest = BuildUpdateRequest(request);
             var response = await _httpClient.UpdatePageAsync(id, apiRequest);
             var dto = response?.ToDto();
 
@@ -111,11 +110,13 @@ public class ExternalNotionService : INotionService
 
     #region Private methods
 
-    private object BuildCreateRequest(string title, string? icon, string? cover)
+    private static object BuildCreateRequest(CreateNotionPageDto dto, string parentPageId)
     {
+        var title = string.IsNullOrWhiteSpace(dto.Title) ? "New Page" : dto.Title;
+
         var request = new Dictionary<string, object?>
         {
-            ["parent"] = new { type = "page_id", page_id = _config.ParentPageId },
+            ["parent"] = new { type = "page_id", page_id = parentPageId },
             ["properties"] = new Dictionary<string, object>
             {
                 ["title"] = new
@@ -128,33 +129,40 @@ public class ExternalNotionService : INotionService
             }
         };
 
-        if (!string.IsNullOrWhiteSpace(icon))
-            request["icon"] = new { type = "emoji", emoji = icon };
+        if (!string.IsNullOrWhiteSpace(dto.Icon))
+            request["icon"] = new { type = "emoji", emoji = dto.Icon };
 
-        if (!string.IsNullOrWhiteSpace(cover))
-            request["cover"] = new { type = "external", external = new { url = cover } };
+        if (!string.IsNullOrWhiteSpace(dto.Cover))
+            request["cover"] = new { type = "external", external = new { url = dto.Cover } };
 
         return request;
     }
 
-    private static object BuildUpdateRequest(string? title)
+    private static object BuildUpdateRequest(UpdateNotionPageDto dto)
     {
-        if (string.IsNullOrWhiteSpace(title))
-            return new { };
+        var body = new Dictionary<string, object?>();
 
-        return new
+        if (!string.IsNullOrWhiteSpace(dto.Title))
         {
-            properties = new
+            body["properties"] = new Dictionary<string, object>
             {
-                title = new
+                ["title"] = new
                 {
                     title = new[]
                     {
-                        new { type = "text", text = new { content = title } }
+                        new { type = "text", text = new { content = dto.Title } }
                     }
                 }
-            }
-        };
+            };
+        }
+
+        if (!string.IsNullOrWhiteSpace(dto.Icon))
+            body["icon"] = new { type = "emoji", emoji = dto.Icon };
+
+        if (!string.IsNullOrWhiteSpace(dto.Cover))
+            body["cover"] = new { type = "external", external = new { url = dto.Cover } };
+
+        return body;
     }
 
     #endregion

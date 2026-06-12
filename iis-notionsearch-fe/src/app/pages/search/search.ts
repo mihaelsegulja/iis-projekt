@@ -9,6 +9,7 @@ import { NotionService } from '../../services/notion.service';
 import { AuthService } from '../../services/auth.service';
 import { NotionObject } from '../../models/models';
 import { DataGridComponent, GridColumn, GridAction } from '../../shared/data-grid/data-grid';
+import { formatDate } from '../../utils/date-utils';
 
 @Component({
   selector: 'app-search-page',
@@ -36,9 +37,9 @@ export class SearchPage implements OnInit {
   readonly columns: GridColumn<NotionObject>[] = [
     { field: 'icon', header: 'Icon', width: '50px' },
     { field: 'title', header: 'Title' },
-    { field: 'createdTime', header: 'Created', width: '180px' },
-    { field: 'lastEditedTime', header: 'Last Edited', width: '180px' },
-    { field: 'inTrash', header: 'Trash', width: '70px' },
+    { field: 'createdTime', header: 'Created', width: '170px', format: formatDate },
+    { field: 'lastEditedTime', header: 'Last Edited', width: '170px', format: formatDate },
+    { field: 'inTrash', header: 'Trash', width: '120px' },
   ];
 
   readonly actions: GridAction<NotionObject>[] = [
