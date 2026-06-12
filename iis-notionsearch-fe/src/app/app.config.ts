@@ -5,13 +5,12 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 
 import { routes } from './app.routes';
 import { authInterceptor } from './interceptors/auth.interceptor';
-import { errorInterceptor } from './interceptors/error.interceptor';
 import { API_URL } from './tokens/api-url.token';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
-    provideHttpClient(withInterceptors([authInterceptor, errorInterceptor])),
+    provideHttpClient(withInterceptors([authInterceptor])),
     provideAnimations(),
     { provide: API_URL, useValue: 'https://localhost:7026' },
   ],

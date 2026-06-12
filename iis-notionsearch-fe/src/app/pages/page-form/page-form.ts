@@ -12,6 +12,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { NotionService } from '../../services/notion.service';
 import { NotionObject } from '../../models/models';
 import { EmojiPickerComponent } from '../../shared/emoji-picker/emoji-picker';
+import { ErrorComponent } from '../../shared/error/error';
 
 @Component({
   selector: 'app-page-form-page',
@@ -27,6 +28,7 @@ import { EmojiPickerComponent } from '../../shared/emoji-picker/emoji-picker';
     MatDividerModule,
     DatePipe,
     EmojiPickerComponent,
+    ErrorComponent,
   ],
   templateUrl: 'page-form.html',
   styleUrl: 'page-form.scss',

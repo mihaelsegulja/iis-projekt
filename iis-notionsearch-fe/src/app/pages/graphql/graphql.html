@@ -3,12 +3,10 @@
   <mat-card-content>
     <app-editor [(code)]="query" placeholder="{ pages { title } }" minHeight="150px" />
     <div class="actions">
-      <button mat-raised-button color="primary" (click)="execute()" [disabled]="loading">
-        @if (loading) { <mat-spinner diameter="20" /> } @else { Execute }
+      <button mat-raised-button color="primary" (click)="execute()" [disabled]="loading()">
+        @if (loading()) { <mat-spinner diameter="20" /> } @else { Execute }
       </button>
-      @if (errorMessage) {
-        <span class="error">{{ errorMessage }}</span>
-      }
+      <app-error [message]="errorMessage" />
     </div>
     <app-editor [code]="response" [isReadonly]="true" placeholder="Response" />
   </mat-card-content>

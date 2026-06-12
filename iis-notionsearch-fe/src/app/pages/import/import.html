@@ -16,8 +16,8 @@
     <app-editor [(code)]="content" [placeholder]="'Paste or load content here...'" />
 
     <div class="actions">
-      <button mat-raised-button color="primary" (click)="importContent()" [disabled]="!content.trim() || loading">
-        @if (loading) { <mat-spinner diameter="20" /> } @else { Import }
+      <button mat-raised-button color="primary" (click)="importContent()" [disabled]="!content.trim() || loading()">
+        @if (loading()) { <mat-spinner diameter="20" /> } @else { Import }
       </button>
     </div>
 

@@ -7,9 +7,7 @@
       <div class="spinner-row"><mat-spinner diameter="32" /></div>
     }
 
-    @if (errorMessage) {
-      <div class="error">{{ errorMessage }}</div>
-    }
+    <app-error [message]="errorMessage" />
 
     <form #form="ngForm" (ngSubmit)="submit()" class="page-form">
       <mat-form-field appearance="outline" class="full-width">

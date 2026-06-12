@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -7,6 +7,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { EditorComponent } from '../../shared/editor/editor';
+import { ErrorComponent } from '../../shared/error/error';
 import { API_URL } from '../../tokens/api-url.token';
 
 const SOAP_TEMPLATE = (term: string) => `<?xml version="1.0" encoding="utf-8"?>
@@ -22,7 +23,7 @@ const SOAP_TEMPLATE = (term: string) => `<?xml version="1.0" encoding="utf-8"?>
 @Component({
   selector: 'app-soap-page',
   standalone: true,
-  imports: [FormsModule, MatCardModule, MatButtonModule, MatProgressSpinnerModule, MatFormFieldModule, MatInputModule, EditorComponent],
+  imports: [FormsModule, MatCardModule, MatButtonModule, MatProgressSpinnerModule, MatFormFieldModule, MatInputModule, EditorComponent, ErrorComponent],
   templateUrl: 'soap.html',
   styleUrl: 'soap.scss',
 })
@@ -33,14 +34,14 @@ export class SoapPage {
   searchTerm = '';
   requestXml = '';
   responseXml = '';
-  loading = false;
+  loading = signal(false);
   errorMessage = '';
 
   search(): void {
     this.requestXml = SOAP_TEMPLATE(this.searchTerm);
     this.responseXml = '';
     this.errorMessage = '';
-    this.loading = true;
+    this.loading.set(true);
 
     this.http
       .post(`${this.apiUrl}/Soap/NotionService.asmx`, this.requestXml, {
@@ -50,11 +51,11 @@ export class SoapPage {
       .subscribe({
         next: (res) => {
           this.responseXml = typeof res === 'string' ? res : JSON.stringify(res, null, 2);
-          this.loading = false;
+          this.loading.set(false);
         },
         error: (err) => {
           this.errorMessage = err.error ?? err.message ?? 'SOAP request failed';
-          this.loading = false;
+          this.loading.set(false);
         },
       });
   }

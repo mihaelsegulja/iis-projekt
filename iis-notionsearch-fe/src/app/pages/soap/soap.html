@@ -6,16 +6,14 @@
       <input matInput [(ngModel)]="searchTerm" placeholder="e.g. notion" (keyup.enter)="search()" />
     </mat-form-field>
     <div class="actions">
-      <button mat-raised-button color="primary" (click)="search()" [disabled]="loading">
-        @if (loading) { <mat-spinner diameter="20" /> } @else { Send SOAP Request }
+      <button mat-raised-button color="primary" (click)="search()" [disabled]="loading()">
+        @if (loading()) { <mat-spinner diameter="20" /> } @else { Send SOAP Request }
       </button>
     </div>
 
     <app-editor [(code)]="requestXml" placeholder="SOAP XML request (auto-generated)" minHeight="150px" />
 
-    @if (errorMessage) {
-      <div class="error">{{ errorMessage }}</div>
-    }
+    <app-error [message]="errorMessage" />
 
     <app-editor [code]="responseXml" [isReadonly]="true" placeholder="SOAP XML response" minHeight="200px" />
   </mat-card-content>

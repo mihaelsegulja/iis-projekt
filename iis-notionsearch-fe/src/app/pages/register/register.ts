@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '../../services/auth.service';
+import { ErrorComponent } from '../../shared/error/error';
 
 @Component({
   selector: 'app-register-page',
@@ -19,6 +20,7 @@ import { AuthService } from '../../services/auth.service';
     MatInputModule,
     MatButtonModule,
     MatProgressSpinnerModule,
+    ErrorComponent,
   ],
   templateUrl: 'register.html',
   styleUrl: 'register.scss',
@@ -37,21 +39,21 @@ export class RegisterPage {
     { validators: (ctrl) => (ctrl.value.password === ctrl.value.confirmPassword ? null : { mismatch: true }) },
   );
 
-  loading = false;
+  loading = signal(false);
   errorMessage: string | null = null;
 
   onSubmit(): void {
     if (this.form.invalid) return;
-    this.loading = true;
+    this.loading.set(true);
     this.errorMessage = null;
     this.auth.register({ username: this.form.value.username!, password: this.form.value.password! }).subscribe({
       next: (res) => {
-        this.loading = false;
+        this.loading.set(false);
         if (res.success) this.router.navigate(['/search']);
         else this.errorMessage = res.message ?? 'Registration failed.';
       },
       error: (err) => {
-        this.loading = false;
+        this.loading.set(false);
         this.errorMessage = err.error?.message ?? 'An unexpected error occurred.';
       },
     });

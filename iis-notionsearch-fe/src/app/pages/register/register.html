@@ -28,13 +28,11 @@
           }
         </mat-form-field>
         @if (form.hasError('mismatch')) {
-          <div class="error-message">Passwords do not match</div>
+          <app-error message="Passwords do not match" />
         }
-        @if (errorMessage) {
-          <div class="error-message">{{ errorMessage }}</div>
-        }
-        <button mat-raised-button color="primary" type="submit" class="full-width" [disabled]="form.invalid || loading">
-          @if (loading) { <mat-spinner diameter="20" /> } @else { Register }
+        <app-error [message]="errorMessage" />
+        <button mat-raised-button color="primary" type="submit" class="full-width" [disabled]="form.invalid || loading()">
+          @if (loading()) { <mat-spinner diameter="20" /> } @else { Register }
         </button>
       </form>
     </mat-card-content>

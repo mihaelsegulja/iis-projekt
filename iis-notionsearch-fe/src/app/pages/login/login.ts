@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '../../services/auth.service';
+import { ErrorComponent } from '../../shared/error/error';
 
 @Component({
   selector: 'app-login-page',
@@ -19,6 +20,7 @@ import { AuthService } from '../../services/auth.service';
     MatInputModule,
     MatButtonModule,
     MatProgressSpinnerModule,
+    ErrorComponent,
   ],
   templateUrl: 'login.html',
   styleUrl: 'login.scss',
@@ -33,7 +35,7 @@ export class LoginPage implements OnInit {
     password: ['', Validators.required],
   });
 
-  loading = false;
+  loading = signal(false);
   errorMessage: string | null = null;
 
   ngOnInit(): void {
@@ -49,16 +51,16 @@ export class LoginPage implements OnInit {
 
   onSubmit(): void {
     if (this.form.invalid) return;
-    this.loading = true;
+    this.loading.set(true);
     this.errorMessage = null;
     this.auth.login(this.form.getRawValue()).subscribe({
       next: (res) => {
-        this.loading = false;
+        this.loading.set(false);
         if (res.success) this.router.navigateByUrl('/search');
         else this.errorMessage = res.message ?? 'Login failed.';
       },
       error: (err) => {
-        this.loading = false;
+        this.loading.set(false);
         this.errorMessage = err.error?.message ?? 'An unexpected error occurred.';
       },
     });

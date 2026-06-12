@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -27,7 +27,7 @@ export class ImportPage {
   contentType = 'application/json';
   content = '';
   fileName = '';
-  loading = false;
+  loading = signal(false);
   result: { successCount: number; errorCount: number; errors: string[] | null } | null = null;
 
   onFileSelect(event: Event): void {
@@ -48,7 +48,7 @@ export class ImportPage {
 
   importContent(): void {
     if (!this.content.trim()) return;
-    this.loading = true;
+    this.loading.set(true);
     this.result = null;
 
     this.http
@@ -60,11 +60,11 @@ export class ImportPage {
       .subscribe({
         next: (res) => {
           this.result = res.data ?? { successCount: 0, errorCount: 0, errors: ['No data returned'] };
-          this.loading = false;
+          this.loading.set(false);
         },
         error: (err) => {
           this.result = { successCount: 0, errorCount: 1, errors: [err.error?.message ?? err.message ?? 'Request failed'] };
-          this.loading = false;
+          this.loading.set(false);
         },
       });
   }
