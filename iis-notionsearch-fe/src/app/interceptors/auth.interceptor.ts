@@ -10,14 +10,28 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   const auth = inject(AuthService);
   const token = auth.getAccessToken();
-  
-  if (token) {
-    req = req.clone({
-      setHeaders: { Authorization: `Bearer ${token}` }
-    });
+
+  if (token && auth.isTokenExpired()) {
+    return auth.refresh().pipe(
+      switchMap(() => {
+        const newToken = auth.getAccessToken();
+        const reqWithToken = newToken
+          ? req.clone({ setHeaders: { Authorization: `Bearer ${newToken}` } })
+          : req;
+        return next(reqWithToken);
+      }),
+      catchError(() => {
+        auth.clearToken();
+        return next(req);
+      }),
+    );
   }
 
-  return next(req).pipe(
+  const reqWithToken = token
+    ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
+    : req;
+
+  return next(reqWithToken).pipe(
     catchError((err) => {
       if (err.status !== 401 || req.headers.has('X-Auth-Retry')) {
         return throwError(() => err);

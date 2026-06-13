@@ -48,6 +48,13 @@ export class AuthService {
     return this._accessToken;
   }
 
+  isTokenExpired(): boolean {
+    if (!this._accessToken) return true;
+    const payload = parseJwt(this._accessToken);
+    if (!payload?.['exp']) return true;
+    return (payload['exp'] as number - 30) * 1000 < Date.now();
+  }
+
   private handleAuthResponse(res: StandardResponse<AuthResponse>): void {
     if (!res.success || !res.data) return;
 

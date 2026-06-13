@@ -1,6 +1,23 @@
 <mat-card>
-  <mat-card-header><mat-card-title>GraphQL Query</mat-card-title></mat-card-header>
+  <mat-card-header><mat-card-title>GraphQL</mat-card-title></mat-card-header>
   <mat-card-content>
+    <div class="snippet-buttons">
+      <button mat-stroked-button (click)="loadSnippet('search')">
+        <mat-icon>search</mat-icon> Search
+      </button>
+      <button mat-stroked-button (click)="loadSnippet('get')">
+        <mat-icon>visibility</mat-icon> Get
+      </button>
+      <button mat-stroked-button (click)="loadSnippet('create')" [disabled]="!auth.isAdmin()">
+        <mat-icon>add_circle</mat-icon> Create
+      </button>
+      <button mat-stroked-button (click)="loadSnippet('update')" [disabled]="!auth.isAdmin()">
+        <mat-icon>edit</mat-icon> Update
+      </button>
+      <button mat-stroked-button (click)="loadSnippet('delete')" [disabled]="!auth.isAdmin()">
+        <mat-icon>delete</mat-icon> Delete
+      </button>
+    </div>
     <app-editor [(code)]="query" placeholder="{ pages { title } }" minHeight="150px" />
     <div class="actions">
       <button mat-raised-button color="primary" (click)="execute()" [disabled]="loading()">

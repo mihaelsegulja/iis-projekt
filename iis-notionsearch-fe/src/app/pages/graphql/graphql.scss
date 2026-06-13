@@ -1,3 +1,10 @@
+.snippet-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
 .actions {
   display: flex;
   align-items: center;
