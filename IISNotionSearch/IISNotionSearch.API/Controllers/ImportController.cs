@@ -19,6 +19,10 @@ public class ImportController : BaseController
     {
         using var reader = new StreamReader(Request.Body);
         var body = await reader.ReadToEndAsync();
+        
+        if (string.IsNullOrWhiteSpace(body))
+            return BadRequest(new { message = "Request body cannot be empty." });
+        
         var contentType = Request.ContentType?.ToLowerInvariant();
 
         if (contentType?.Contains("xml") == true)

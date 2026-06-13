@@ -6,14 +6,21 @@
       <mat-radio-button value="application/xml">XML</mat-radio-button>
     </mat-radio-group>
 
+    <div class="snippet-buttons">
+      @for (btn of snippetButtons; track btn.key) {
+        <button mat-stroked-button (click)="loadSnippet(btn.key)">
+          <mat-icon>{{ btn.icon }}</mat-icon> {{ btn.label }}
+        </button>
+      }
+    </div>
+
     <div class="actions">
       <input #fileInput type="file" (change)="onFileSelect($event)" accept=".json,.xml" hidden />
       <button mat-stroked-button (click)="fileInput.click()">Choose File</button>
       <span class="file-name">{{ fileName }}</span>
-      <button mat-stroked-button (click)="loadSnippet()">Load {{ contentType === 'application/json' ? 'JSON' : 'XML' }} Snippet</button>
     </div>
 
-    <app-editor [(code)]="content" [placeholder]="'Paste or load content here...'" />
+    <app-editor [(code)]="content" [placeholder]="placeholderText" />
 
     <div class="actions">
       <button mat-raised-button color="primary" (click)="importContent()" [disabled]="!content.trim() || loading()">

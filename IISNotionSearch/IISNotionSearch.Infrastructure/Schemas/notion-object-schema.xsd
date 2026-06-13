@@ -1,24 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
-    <xs:element name="NotionObjectDto">
+    <xs:simpleType name="NonEmptyString">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="NotionObjectType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="page" />
+            <xs:enumeration value="database" />
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:complexType name="NotionObjectDtoType">
+        <xs:sequence>
+            <xs:element name="NotionId" type="NonEmptyString" />
+            <xs:element name="ObjectType" type="NotionObjectType" />
+            <xs:element name="Title" type="NonEmptyString" />
+            <xs:element name="Url" type="xs:anyURI" />
+            <xs:element name="Icon" type="xs:string" nillable="true" minOccurs="0" />
+            <xs:element name="Cover" type="xs:string" nillable="true" minOccurs="0" />
+            <xs:element name="CreatedTime" type="xs:dateTime" minOccurs="0" />
+            <xs:element name="LastEditedTime" type="xs:dateTime" minOccurs="0" />
+            <xs:element name="InTrash" type="xs:boolean" minOccurs="0" default="false" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="NotionObjectDto" type="NotionObjectDtoType" />
+
+    <xs:element name="ArrayOfNotionObjectDto">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="NotionId" type="xs:string" />
-                <xs:element name="ObjectType">
-                    <xs:simpleType>
-                        <xs:restriction base="xs:string">
-                            <xs:enumeration value="page" />
-                            <xs:enumeration value="database" />
-                        </xs:restriction>
-                    </xs:simpleType>
-                </xs:element>
-                <xs:element name="Title" type="xs:string" />
-                <xs:element name="Url" type="xs:anyURI" />
-                <xs:element name="Icon" type="xs:string" nillable="true" minOccurs="0" />
-                <xs:element name="Cover" type="xs:string" nillable="true" minOccurs="0" />
-                <xs:element name="CreatedTime" type="xs:dateTime" />
-                <xs:element name="LastEditedTime" type="xs:dateTime" />
-                <xs:element name="InTrash" type="xs:boolean" default="false"/>
+                <xs:element ref="NotionObjectDto" minOccurs="0" maxOccurs="unbounded" />
             </xs:sequence>
         </xs:complexType>
     </xs:element>
