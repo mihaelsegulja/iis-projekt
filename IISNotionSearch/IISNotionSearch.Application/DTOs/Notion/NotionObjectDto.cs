@@ -8,7 +8,7 @@ public class NotionObjectDto
     public string Url { get; set; } = null!;
     public string? Icon { get; set; }
     public string? Cover { get; set; }
-    public DateTimeOffset CreatedTime { get; set; }
-    public DateTimeOffset LastEditedTime { get; set; }
+    public DateTimeOffset CreatedTime { get; set; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset LastEditedTime { get; set; } = DateTimeOffset.UtcNow;
     public bool InTrash { get; set; }
 }

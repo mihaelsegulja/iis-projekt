@@ -1,11 +1,10 @@
-using IISNotionSearch.API.Abstractions.Attributes;
 using IISNotionSearch.Application.DTOs.Notion;
 using IISNotionSearch.Application.Interfaces.Services;
 using IISNotionSearch.Domain.Enums;
 
 namespace IISNotionSearch.API.GraphQL;
 
-[AuthorizeRoles(MinRole = Roles.Admin)]
+[AuthorizeMinRole(Roles.Admin)]
 public class NotionMutation
 {
     public async Task<NotionObjectDto> CreatePage(

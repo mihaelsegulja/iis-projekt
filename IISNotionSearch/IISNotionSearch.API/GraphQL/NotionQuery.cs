@@ -1,11 +1,10 @@
-using IISNotionSearch.API.Abstractions.Attributes;
 using IISNotionSearch.Application.DTOs.Notion;
 using IISNotionSearch.Application.Interfaces.Services;
 using IISNotionSearch.Domain.Enums;
 
 namespace IISNotionSearch.API.GraphQL;
 
-[AuthorizeRoles(MinRole = Roles.User)]
+[AuthorizeMinRole(Roles.User)]
 public class NotionQuery
 {
     public async Task<List<NotionObjectDto>> SearchPages(

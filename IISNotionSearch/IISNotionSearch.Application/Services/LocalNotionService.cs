@@ -49,7 +49,7 @@ public class LocalNotionService : INotionService
         {
             NotionId = Guid.NewGuid().ToString(),
             ObjectType = "page",
-            Title = string.IsNullOrWhiteSpace(request.Title) ? "New Page" : request.Title,
+            Title = request.Title,
             Url = "local://newpage",
             Icon = request.Icon,
             Cover = request.Cover,
@@ -92,16 +92,15 @@ public class LocalNotionService : INotionService
     {
         var results = await _repository.FindAsync(x => x.NotionId == id && !x.InTrash);
         var page = results.FirstOrDefault();
+
+        if (page == null) 
+            return StandardResponse<bool>.Create(ResultStatus.NotFound, message: "Page not found");
         
-        if (page != null)
-        {
-            page.InTrash = true;
-            page.LastEditedTime = DateTimeOffset.UtcNow;
-            _repository.Update(page);
-            await _repository.SaveChangesAsync();
-            return StandardResponse<bool>.Create(ResultStatus.Ok, true);
-        }
+        page.InTrash = true;
+        page.LastEditedTime = DateTimeOffset.UtcNow;
+        _repository.Update(page);
+        await _repository.SaveChangesAsync();
         
-        return StandardResponse<bool>.Create(ResultStatus.NotFound, message: "Page not found");
+        return StandardResponse<bool>.Create(ResultStatus.Ok, true);
     }
 }
