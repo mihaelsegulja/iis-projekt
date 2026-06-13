@@ -43,7 +43,7 @@ docker-compose up -d
 dotnet run --project IISNotionSearch/IISNotionSearch.API/IISNotionSearch.API.csproj
 ```
 
-- The API is available at: <https://localhost:7026>. Swagger UI is available on `/swagger` in Development.
+- API is available at: <https://localhost:7026>. Swagger UI is available on `/swagger` in Development.
 
 3. Run the frontend
 
@@ -57,11 +57,11 @@ npm install
 npm run start
 ```
 
-- The frontend is available at: <http://localhost:4200>
+- Frontend is available at: <http://localhost:4200>
 
 ### Database migrations (if needed)
 
-- The project uses Entity Framework Core (Microsoft.EntityFrameworkCore.SqlServer) and applies migrations on start of the application. 
+- The project uses Entity Framework Core (Microsoft.EntityFrameworkCore.SqlServer) and applies migrations on start of the application.
 - If you need to create or apply migrations (from `IISNotionSearch` solution dir):
 
 **create a migration**
