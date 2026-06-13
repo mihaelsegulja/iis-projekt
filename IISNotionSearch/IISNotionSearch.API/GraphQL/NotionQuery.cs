@@ -16,11 +16,11 @@ public class NotionQuery
         return result.Data?.ToList() ?? [];
     }
 
-    public async Task<NotionObjectDto?> GetPage(
+    public async Task<NotionObjectDto> GetPage(
         string id,
         [Service] INotionService notionService)
     {
         var result = await notionService.GetPageAsync(id);
-        return result.Data;
+        return result.Data ?? throw new GraphQLException(result.Message ?? "Page not found");
     }
 }

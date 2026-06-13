@@ -17,7 +17,7 @@ const SNIPPETS: Record<string, string> = {
   }
 }`,
   get: `query {
-  getPage(id: "enter-page-id") {
+  page(id: "enter-page-id") {
     notionId title url icon cover createdTime lastEditedTime inTrash
   }
 }`,
