@@ -2,6 +2,12 @@
   width: 100%;
   margin-bottom: 8px;
 }
+.snippets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0;
+}
 .actions {
   display: flex;
   align-items: center;

@@ -1,11 +1,14 @@
 using IISNotionSearch.API.Abstractions.Controllers;
 using IISNotionSearch.Application.Models;
 using Grpc.Core;
+using IISNotionSearch.API.Abstractions.Attributes;
+using IISNotionSearch.Domain.Enums;
 using IISNotionSearch.Infrastructure.Grpc;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IISNotionSearch.API.Controllers;
 
+[AuthorizeRoles(MinRole = Roles.User)]
 public class WeatherController : BaseController
 {
     private readonly WeatherService.WeatherServiceClient _grpcClient;

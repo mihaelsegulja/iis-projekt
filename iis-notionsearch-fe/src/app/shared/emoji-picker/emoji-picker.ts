@@ -1,4 +1,4 @@
-import { Component, computed, input, output, signal } from '@angular/core';
+import { Component, input, output, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
@@ -66,15 +66,6 @@ const CATEGORIES: EmojiCategory[] = [
       @if (open()) {
         <div class="backdrop" (click)="open.set(false)"></div>
         <div class="panel" (click)="$event.stopPropagation()">
-          <div class="search-row">
-            <mat-icon class="search-icon">search</mat-icon>
-            <input
-              class="search-input"
-              [(ngModel)]="searchQuery"
-              placeholder="Search emoji..."
-              (keydown)="$event.stopPropagation()"
-            />
-          </div>
 
           <div class="tabs">
             @for (cat of categories; track cat.name) {
@@ -92,11 +83,10 @@ const CATEGORIES: EmojiCategory[] = [
 
           <div class="scroll-area" #scrollArea>
             @for (cat of categories; track cat.name) {
-              @if (filtered(cat).length) {
                 <div class="cat-section" [id]="'emoji-cat-' + cat.name">
                   <div class="cat-header">{{ cat.icon }} {{ cat.name }}</div>
                   <div class="grid">
-                    @for (emoji of filtered(cat); track emoji) {
+                    @for (emoji of cat.items; track emoji) {
                       <button
                         type="button"
                         class="emoji-btn"
@@ -109,7 +99,6 @@ const CATEGORIES: EmojiCategory[] = [
                     }
                   </div>
                 </div>
-              }
             }
           </div>
         </div>
@@ -129,15 +118,6 @@ const CATEGORIES: EmojiCategory[] = [
       background: #fff; border: 1px solid rgba(0,0,0,0.12); border-radius: 8px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.15); width: 340px;
       display: flex; flex-direction: column;
-    }
-    .search-row {
-      display: flex; align-items: center; gap: 6px;
-      padding: 8px 10px; border-bottom: 1px solid rgba(0,0,0,0.08);
-    }
-    .search-icon { font-size: 1.1rem; color: rgba(0,0,0,0.4); }
-    .search-input {
-      flex: 1; border: none; outline: none; font-size: 0.875rem;
-      font-family: inherit; background: transparent;
     }
     .tabs {
       display: flex; gap: 2px; padding: 6px 8px;
@@ -173,21 +153,13 @@ export class EmojiPickerComponent {
   readonly value = input('');
   readonly valueChange = output<string>();
   readonly open = signal(false);
-  readonly searchQuery = signal('');
   readonly activeCategory = signal('');
 
   readonly categories = CATEGORIES;
 
-  filtered(cat: EmojiCategory): string[] {
-    const q = this.searchQuery().toLowerCase();
-    if (!q) return cat.items;
-    return cat.items.filter((e) => e.includes(q));
-  }
-
   select(emoji: string): void {
     this.valueChange.emit(emoji);
     this.open.set(false);
-    this.searchQuery.set('');
   }
 
   scrollTo(catName: string): void {

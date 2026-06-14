@@ -64,13 +64,13 @@ npm run start
 - The project uses Entity Framework Core (Microsoft.EntityFrameworkCore.SqlServer) and applies migrations on start of the application.
 - If you need to create or apply migrations (from `IISNotionSearch` solution dir):
 
-**create a migration**
+#### Create a migration
 
 ```bash
 dotnet ef migrations add SomeMigrationName --project IISNotionSearch.Repository --startup-project IISNotionSearch.API
 ```
 
-**apply migrations**
+#### Apply migrations
 
 ```bash
 dotnet ef database update --project IISNotionSearch.Repository --startup-project IISNotionSearch.API
@@ -81,11 +81,11 @@ dotnet ef database update --project IISNotionSearch.Repository --startup-project
 - To stop the database container:
 
 ```bash
-docker-compose down
+docker compose down
 ```
 
 - Data is persisted to a named Docker volume `sqlserverdata` (defined in docker-compose.yml). To remove the volume as well:
 
 ```bash
-docker-compose down -v
+docker compose down -v
 ```

@@ -15,7 +15,7 @@ public class NotionQuery
         return result.Data?.ToList() ?? [];
     }
 
-    public async Task<NotionObjectDto> GetPage(
+    public async Task<NotionObjectDto?> GetPage(
         string id,
         [Service] INotionService notionService)
     {

@@ -7,7 +7,7 @@ namespace IISNotionSearch.API.GraphQL;
 [AuthorizeMinRole(Roles.Admin)]
 public class NotionMutation
 {
-    public async Task<NotionObjectDto> CreatePage(
+    public async Task<NotionObjectDto?> CreatePage(
         CreateNotionPageDto input,
         [Service] INotionService notionService)
     {
@@ -17,7 +17,7 @@ public class NotionMutation
         return result.Data;
     }
 
-    public async Task<NotionObjectDto> UpdatePage(
+    public async Task<NotionObjectDto?> UpdatePage(
         string id,
         UpdateNotionPageDto input,
         [Service] INotionService notionService)

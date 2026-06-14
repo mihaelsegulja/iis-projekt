@@ -36,8 +36,8 @@
         <div class="meta-grid">
           <div><strong>ID:</strong> {{ page.notionId }}</div>
           <div><strong>URL:</strong> <a [href]="page.url" target="_blank">{{ page.url }}</a></div>
-          <div><strong>Created:</strong> {{ page.createdTime | date: 'medium' }}</div>
-          <div><strong>Last Edited:</strong> {{ page.lastEditedTime | date: 'medium' }}</div>
+          <div><strong>Created:</strong> {{ formatDate(page.createdTime) }}</div>
+          <div><strong>Last Edited:</strong> {{ formatDate(page.lastEditedTime) }}</div>
           <div><strong>In Trash:</strong> {{ page.inTrash ? 'Yes' : 'No' }}</div>
         </div>
       }

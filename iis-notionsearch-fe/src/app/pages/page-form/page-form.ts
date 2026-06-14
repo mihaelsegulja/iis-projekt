@@ -1,4 +1,3 @@
-import { DatePipe } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -13,6 +12,7 @@ import { NotionService } from '../../services/notion.service';
 import { NotionObject } from '../../models/models';
 import { EmojiPickerComponent } from '../../shared/emoji-picker/emoji-picker';
 import { ErrorComponent } from '../../shared/error/error';
+import { formatDate } from '../../utils/date-utils';
 
 @Component({
   selector: 'app-page-form-page',
@@ -26,7 +26,6 @@ import { ErrorComponent } from '../../shared/error/error';
     MatIconModule,
     MatProgressSpinnerModule,
     MatDividerModule,
-    DatePipe,
     EmojiPickerComponent,
     ErrorComponent,
   ],
@@ -106,4 +105,6 @@ export class PageFormPage implements OnInit {
   cancel(): void {
     this.router.navigate(['/search']);
   }
+
+  formatDate = formatDate;
 }

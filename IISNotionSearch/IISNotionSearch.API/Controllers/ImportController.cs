@@ -1,9 +1,12 @@
+using IISNotionSearch.API.Abstractions.Attributes;
 using IISNotionSearch.API.Abstractions.Controllers;
 using IISNotionSearch.Application.Interfaces.Services;
+using IISNotionSearch.Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IISNotionSearch.API.Controllers;
 
+[AuthorizeRoles(MinRole = Roles.Admin)]
 public class ImportController : BaseController
 {
     private readonly IImportService _importService;
