@@ -1,21 +1,19 @@
-using System.Xml.Serialization;
 using Grpc.Core;
 using IISNotionSearch.Application.Configurations;
 using IISNotionSearch.Application.Models;
 using IISNotionSearch.Infrastructure.Grpc;
-using IISNotionSearch.Infrastructure.Models.Dhmz;
 using Microsoft.Extensions.Options;
 
 namespace IISNotionSearch.Infrastructure.Services;
 
 public class DhmzGrpcService : WeatherService.WeatherServiceBase
 {
-    private readonly HttpClient _httpClient;
+    private readonly DhmzHttpClient _dhmzClient;
     private readonly DhmzConfig _dhmzConfig;
 
-    public DhmzGrpcService(HttpClient httpClient, IOptions<DhmzConfig> dhmzConfig)
+    public DhmzGrpcService(DhmzHttpClient dhmzClient, IOptions<DhmzConfig> dhmzConfig)
     {
-        _httpClient = httpClient;
+        _dhmzClient = dhmzClient;
         _dhmzConfig = dhmzConfig.Value;
     }
 
@@ -39,7 +37,7 @@ public class DhmzGrpcService : WeatherService.WeatherServiceBase
             using var timeoutCts = new CancellationTokenSource(timeout);
             using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCts.Token);
 
-            var weatherData = await FetchWeatherDataAsync(linkedCts.Token);
+            var weatherData = await _dhmzClient.FetchWeatherDataAsync(linkedCts.Token);
 
             var filteredGradovi = weatherData.Gradovi
                 .Where(g => g.GradIme.Contains(request.CityName, StringComparison.OrdinalIgnoreCase))
@@ -98,17 +96,4 @@ public class DhmzGrpcService : WeatherService.WeatherServiceBase
         }
     }
 
-    private async Task<DhmzWeatherXml> FetchWeatherDataAsync(CancellationToken cancellationToken)
-    {
-        var response = await _httpClient.GetAsync(
-            _dhmzConfig.XmlPath,
-            HttpCompletionOption.ResponseHeadersRead,
-            cancellationToken);
-
-        response.EnsureSuccessStatusCode();
-
-        await using var xmlStream = await response.Content.ReadAsStreamAsync(cancellationToken);
-        var serializer = new XmlSerializer(typeof(DhmzWeatherXml));
-        return (DhmzWeatherXml)serializer.Deserialize(xmlStream)!;
-    }
 }

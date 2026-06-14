@@ -17,12 +17,14 @@ public static class DependencyInjection
     {
         var dhmzBaseUrl = dhmzConfig.BaseUrl;
 
-        services.AddHttpClient<DhmzGrpcService>(client =>
+        services.AddHttpClient<DhmzHttpClient>(client =>
         {
             client.BaseAddress = new Uri(dhmzBaseUrl);
             client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) IISNotionSearch/1.0");
             client.DefaultRequestHeaders.Add("Accept", "text/xml");
         }).ConfigurePrimaryHttpMessageHandler(CreateDhmzHttpHandler);
+
+        services.AddScoped<DhmzGrpcService>();
 
         services.AddHttpClient<NotionHttpClient>((provider, client) =>
         {

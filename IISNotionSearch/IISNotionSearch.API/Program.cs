@@ -22,7 +22,7 @@ builder.Services.AddSwagger();
 builder.Services.AddAppConfiguration(builder.Configuration);
 
 var connectionString = builder.Configuration.GetConnectionString();
-var dhmzConfig = builder.Configuration.GetSection("DhmzConfig").Get<DhmzConfig>() ?? new DhmzConfig();
+var dhmzConfig = builder.Configuration.GetSection("DhmzConfig").Get<DhmzConfig>();
 
 builder.Services.AddRepository(connectionString);
 builder.Services.AddApplication();
@@ -38,7 +38,7 @@ builder.Services.AddGrpcClient<WeatherService.WeatherServiceClient>(options =>
 
 builder.Services.AddJwtAuthentication(builder.Configuration);
 
-var corsConfig = builder.Configuration.GetSection("CorsConfig").Get<CorsConfig>() ?? new CorsConfig();
+var corsConfig = builder.Configuration.GetSection("CorsConfig").Get<CorsConfig>();
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>

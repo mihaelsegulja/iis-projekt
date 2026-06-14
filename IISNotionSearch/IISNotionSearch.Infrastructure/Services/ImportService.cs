@@ -14,29 +14,39 @@ namespace IISNotionSearch.Infrastructure.Services;
 public class ImportService : IImportService
 {
     private readonly INotionObjectRepository _repository;
-    private readonly string _schemaDir;
+    
+    private readonly XmlSchemaSet _xmlSchemaSet;
+    private readonly JsonSchema _jsonSchema;
+
+    private static readonly XmlSerializer ArraySerializer = new(typeof(NotionObjectDto[]));
+    private static readonly XmlSerializer SingleSerializer = new(typeof(NotionObjectDto));
 
     public ImportService(INotionObjectRepository repository)
     {
         _repository = repository;
-        _schemaDir = Path.Combine(AppContext.BaseDirectory, "Schemas");
+        var schemaDir = Path.Combine(AppContext.BaseDirectory, "Schemas");
+
+        _xmlSchemaSet = new XmlSchemaSet();
+        using (var schemaReader = XmlReader.Create(Path.Combine(schemaDir, "notion-object-schema.xsd")))
+        {
+            _xmlSchemaSet.Add(null, schemaReader);
+        }
+
+        var jsonSchemaPath = Path.Combine(schemaDir, "notion-object-schema.json");
+        var schemaText = File.ReadAllText(jsonSchemaPath);
+        _jsonSchema = JsonSchema.FromText(schemaText);
     }
 
     public async Task<StandardResponse<List<NotionObjectDto>>> ImportXmlAsync(string xmlContent)
     {
         var errors = new List<string>();
 
-        var schemaSet = new XmlSchemaSet();
-        using (var schemaReader = XmlReader.Create(Path.Combine(_schemaDir, "notion-object-schema.xsd")))
-        {
-            schemaSet.Add(null, schemaReader);
-        }
-
         var settings = new XmlReaderSettings
         {
             ValidationType = ValidationType.Schema,
-            Schemas = schemaSet,
-            ValidationFlags = XmlSchemaValidationFlags.ReportValidationWarnings
+            Schemas = _xmlSchemaSet,
+            ValidationFlags = XmlSchemaValidationFlags.ReportValidationWarnings,
+            Async = true
         };
 
         settings.ValidationEventHandler += (_, args) => errors.Add(args.Message);
@@ -46,7 +56,7 @@ public class ImportService : IImportService
         {
             using (var validationReader = XmlReader.Create(new StringReader(xmlContent), settings))
             {
-                while (validationReader.Read()) { }
+                while (await validationReader.ReadAsync()) { }
             }
 
             if (errors.Count > 0)
@@ -60,56 +70,31 @@ public class ImportService : IImportService
 
             if (string.Equals(rootName, "ArrayOfNotionObjectDto", StringComparison.OrdinalIgnoreCase))
             {
-                var serializer = new XmlSerializer(typeof(NotionObjectDto[]));
-                dtos = (serializer.Deserialize(contentReader) as NotionObjectDto[])?.ToList() ?? [];
+                dtos = (ArraySerializer.Deserialize(contentReader) as NotionObjectDto[])?.ToList() ?? [];
             }
             else
             {
-                var serializer = new XmlSerializer(typeof(NotionObjectDto));
-                var dto = serializer.Deserialize(contentReader) as NotionObjectDto;
+                var dto = SingleSerializer.Deserialize(contentReader) as NotionObjectDto;
                 dtos = dto != null ? [dto] : [];
             }
         }
         catch (XmlException ex)
         {
             errors.Add($"Invalid XML: {ex.Message}");
-            return StandardResponse<List<NotionObjectDto>>.Create(ResultStatus.InternalError,
-                errors: errors, message: "XML Schema validation failed");
+            return StandardResponse<List<NotionObjectDto>>.Create(ResultStatus.InternalError, errors: errors, message: "XML Validation failed");
         }
         catch (InvalidOperationException ex)
         {
             errors.Add($"Deserialization error: {ex.Message}");
-            return StandardResponse<List<NotionObjectDto>>.Create(ResultStatus.InternalError,
-                errors: errors, message: "XML Schema validation failed");
+            return StandardResponse<List<NotionObjectDto>>.Create(ResultStatus.InternalError, errors: errors, message: "XML Deserialization failed");
         }
 
-        if (dtos.Count == 0)
-        {
-            return StandardResponse<List<NotionObjectDto>>.Create(ResultStatus.InternalError,
-                errors: ["No valid NotionObjectDto elements found"],
-                message: "XML Schema validation failed");
-        }
-
-        var imported = new List<NotionObjectDto>();
-        foreach (var dto in dtos)
-        {
-            var entity = dto.ToEntity();
-            await _repository.AddAsync(entity);
-            imported.Add(entity.ToDto());
-        }
-
-        await _repository.SaveChangesAsync();
-
-        return StandardResponse<List<NotionObjectDto>>.Create(ResultStatus.Ok, imported);
+        return await SaveAndReturnDtosAsync(dtos);
     }
 
     public async Task<StandardResponse<List<NotionObjectDto>>> ImportJsonAsync(string jsonContent)
     {
         var errors = new List<string>();
-
-        var schemaText = await File.ReadAllTextAsync(
-            Path.Combine(_schemaDir, "notion-object-schema.json"));
-        var schema = JsonSchema.FromText(schemaText);
 
         JsonDocument doc;
         try
@@ -119,11 +104,10 @@ public class ImportService : IImportService
         catch (JsonException ex)
         {
             errors.Add($"Invalid JSON: {ex.Message}");
-            return StandardResponse<List<NotionObjectDto>>.Create(ResultStatus.InternalError,
-                errors: errors, message: "JSON Schema validation failed");
+            return StandardResponse<List<NotionObjectDto>>.Create(ResultStatus.InternalError, errors: errors, message: "JSON Parsing failed");
         }
 
-        var results = schema.Evaluate(doc.RootElement, new EvaluationOptions
+        var results = _jsonSchema.Evaluate(doc.RootElement, new EvaluationOptions
         {
             OutputFormat = OutputFormat.List
         });
@@ -131,18 +115,14 @@ public class ImportService : IImportService
         if (!results.IsValid)
         {
             ExtractJsonErrors(results, errors);
-
             return StandardResponse<List<NotionObjectDto>>.Create(ResultStatus.InternalError,
                 errors: errors.Count > 0 ? errors : ["Schema validation returned no details"],
                 message: "JSON Schema validation failed");
         }
 
-        var options = new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        };
-
-        List<NotionObjectDto> dtos;
+        var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+        List<NotionObjectDto> dtos = [];
+        
         try
         {
             if (doc.RootElement.ValueKind == JsonValueKind.Array)
@@ -158,15 +138,20 @@ public class ImportService : IImportService
         catch (JsonException ex)
         {
             errors.Add($"Deserialization error: {ex.Message}");
-            return StandardResponse<List<NotionObjectDto>>.Create(ResultStatus.InternalError,
-                errors: errors, message: "JSON Schema validation failed");
+            return StandardResponse<List<NotionObjectDto>>.Create(ResultStatus.InternalError, errors: errors, message: "JSON Deserialization failed");
         }
 
+        return await SaveAndReturnDtosAsync(dtos);
+    }
+
+    #region Private methods
+
+    private async Task<StandardResponse<List<NotionObjectDto>>> SaveAndReturnDtosAsync(List<NotionObjectDto> dtos)
+    {
         if (dtos.Count == 0)
         {
             return StandardResponse<List<NotionObjectDto>>.Create(ResultStatus.InternalError,
-                errors: ["No valid NotionObjectDto elements found"],
-                message: "JSON Schema validation failed");
+                errors: ["No valid NotionObjectDto elements found"], message: "Data import failed");
         }
 
         var imported = new List<NotionObjectDto>();
@@ -178,20 +163,14 @@ public class ImportService : IImportService
         }
 
         await _repository.SaveChangesAsync();
-
         return StandardResponse<List<NotionObjectDto>>.Create(ResultStatus.Ok, imported);
     }
-
-    #region Private methods
 
     private static void ExtractJsonErrors(EvaluationResults node, List<string> errList)
     {
         if (node.Errors is { Count: > 0 })
         {
-            var path = string.IsNullOrEmpty(node.InstanceLocation.ToString())
-                ? "Root"
-                : node.InstanceLocation.ToString();
-
+            var path = string.IsNullOrEmpty(node.InstanceLocation.ToString()) ? "Root" : node.InstanceLocation.ToString();
             foreach (var kvp in node.Errors)
             {
                 errList.Add($"[{path}] {kvp.Value}");
