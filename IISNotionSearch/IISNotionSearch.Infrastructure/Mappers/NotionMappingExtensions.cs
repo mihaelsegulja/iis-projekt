@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
 using IISNotionSearch.Application.DTOs.Notion;
 
@@ -15,7 +13,7 @@ public static class NotionMappingExtensions
         {
             NotionId = response.Id,
             ObjectType = response.Object,
-            Title = title ?? "Untitled",
+            Title = title ?? "???",
             Url = response.Url,
             Icon = ExtractIconString(response.Icon),
             Cover = ExtractCoverString(response.Cover),
@@ -27,12 +25,7 @@ public static class NotionMappingExtensions
 
     public static IEnumerable<NotionObjectDto> ToDtos(this NotionSearchResponseDto response)
     {
-        if (response.Results == null)
-        {
-            return Enumerable.Empty<NotionObjectDto>();
-        }
-
-        return response.Results.Select(r => r.ToDto());
+        return response.Results == null ? [] : response.Results.Select(r => r.ToDto());
     }
 
     #region Private methods

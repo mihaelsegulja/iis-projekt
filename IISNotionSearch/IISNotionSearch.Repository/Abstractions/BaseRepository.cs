@@ -1,6 +1,5 @@
 using System.Linq.Expressions;
 using IISNotionSearch.Domain.Abstractions;
-using IISNotionSearch.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace IISNotionSearch.Repository.Abstractions;

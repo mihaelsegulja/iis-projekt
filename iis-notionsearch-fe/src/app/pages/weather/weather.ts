@@ -1,12 +1,10 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTableModule } from '@angular/material/table';
+import { DataGridComponent, GridColumn } from '../../shared/data-grid/data-grid';
 import { WeatherService } from '../../services/weather.service';
 import { CityWeather } from '../../models/models';
 
@@ -15,13 +13,11 @@ import { CityWeather } from '../../models/models';
   standalone: true,
   imports: [
     FormsModule,
-    MatCardModule,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    MatProgressSpinnerModule,
-    MatTableModule,
+    DataGridComponent,
   ],
   templateUrl: 'weather.html',
   styleUrl: 'weather.scss',
@@ -30,11 +26,9 @@ export class WeatherPage implements OnInit {
   private readonly weather = inject(WeatherService);
 
   query = '';
-  results = signal<CityWeather[]>([]);
-  loading = signal(false);
   lastUpdated = '';
 
-  readonly columns = [
+  columns: GridColumn<CityWeather>[] = [
     { field: 'cityName', header: 'City' },
     { field: 'temperature', header: 'Temperature' },
     { field: 'humidity', header: 'Humidity' },
@@ -43,7 +37,8 @@ export class WeatherPage implements OnInit {
     { field: 'windDirection', header: 'Wind Direction' },
   ];
 
-  readonly displayedColumns = this.columns.map((c) => c.field);
+  data: CityWeather[] = [];
+  loading = signal(false);
 
   ngOnInit(): void {
     this.search();
@@ -53,7 +48,7 @@ export class WeatherPage implements OnInit {
     this.loading.set(true);
     this.weather.getWeather(this.query).subscribe({
       next: (res) => {
-        this.results.set(res.data?.results ?? []);
+        this.data = res.data?.results ?? [];
         this.lastUpdated = res.data?.lastUpdated ?? '';
         this.loading.set(false);
       },

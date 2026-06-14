@@ -17,7 +17,7 @@ public abstract class BaseController : ControllerBase
             ResultStatus.Forbidden => Forbid(),
             ResultStatus.Conflict => Conflict(response),
             ResultStatus.Unauthorized => Unauthorized(response),
-            _ => StatusCode(500, response)
+            _ => StatusCode(StatusCodes.Status500InternalServerError, response)
         };
     }
 }

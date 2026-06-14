@@ -1,7 +1,5 @@
 using IISNotionSearch.Application.DTOs.Notion;
 using IISNotionSearch.Application.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace IISNotionSearch.Application.Interfaces.Services;
 

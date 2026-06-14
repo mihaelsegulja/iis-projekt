@@ -11,127 +11,119 @@ namespace IISNotionSearch.Infrastructure.Services;
 public class NotionSoapService : INotionSoapService
 {
     private readonly INotionService _notionService;
-    private readonly string _schemaPath;
+    private readonly XmlSchemaSet _xmlSchemaSet;
+
+    private static readonly XmlSerializer ListSerializer = new(typeof(List<NotionObjectDto>), new XmlRootAttribute("ArrayOfNotionObjectDto"));
 
     public NotionSoapService(INotionService notionService)
     {
         _notionService = notionService;
-        _schemaPath = Path.Combine(AppContext.BaseDirectory, "Schemas", "notion-object-schema.xsd");
+        
+        _xmlSchemaSet = new XmlSchemaSet();
+        var schemaPath = Path.Combine(AppContext.BaseDirectory, "Schemas", "notion-object-schema.xsd");
+        using var schemaReader = XmlReader.Create(schemaPath);
+        _xmlSchemaSet.Add(null, schemaReader);
     }
 
     public async Task<SoapSearchResponse> Search(string term)
     {
         var response = await _notionService.SearchAsync();
-        var items = response.Data?.ToList() ?? new List<NotionObjectDto>();
+        var items = response.Data?.ToList() ?? [];
 
         var sb = new StringBuilder();
         using (var writer = new StringWriter(sb))
         {
-            var serializer = new XmlSerializer(typeof(List<NotionObjectDto>),
-                new XmlRootAttribute("ArrayOfNotionObjectDto"));
-            serializer.Serialize(writer, items);
+            ListSerializer.Serialize(writer, items);
         }
-
         var xmlContent = sb.ToString();
+
         var validationErrors = new List<string>();
+        var settings = new XmlReaderSettings
+        {
+            ValidationType = ValidationType.Schema,
+            Schemas = _xmlSchemaSet,
+            ValidationFlags = XmlSchemaValidationFlags.ReportValidationWarnings,
+            Async = true
+        };
+        settings.ValidationEventHandler += (_, args) => validationErrors.Add(args.Message);
 
         try
         {
-            var schemaSet = new XmlSchemaSet();
-            using (var schemaReader = XmlReader.Create(_schemaPath))
-            {
-                schemaSet.Add(null, schemaReader);
-            }
-
-            var settings = new XmlReaderSettings
-            {
-                ValidationType = ValidationType.Schema,
-                Schemas = schemaSet,
-                ValidationFlags = XmlSchemaValidationFlags.ReportValidationWarnings
-            };
-
-            settings.ValidationEventHandler += (_, args) => validationErrors.Add(args.Message);
-
-            using (var validationReader = XmlReader.Create(new StringReader(xmlContent), settings))
-            {
-                while (validationReader.Read()) { }
-            }
+            using var validationReader = XmlReader.Create(new StringReader(xmlContent), settings);
+            while (await validationReader.ReadAsync()) { }
         }
         catch (Exception ex)
         {
-            validationErrors.Add($"Strukturalna XML pogreška: {ex.Message}");
+            validationErrors.Add($"XML Structural Error: {ex.Message}");
         }
 
         if (validationErrors.Count > 0)
         {
-            return new SoapSearchResponse
-            {
-                Message = $"XML Validation Failed: {string.Join("; ", validationErrors)}"
-            };
+            return new SoapSearchResponse { Message = $"XML Validation Failed: {string.Join("; ", validationErrors)}" };
         }
 
         var doc = new XmlDocument();
         doc.LoadXml(xmlContent);
 
-        string xpath;
-        if (string.IsNullOrWhiteSpace(term))
-        {
-            xpath = "//NotionObjectDto";
-        }
-        else if (term.StartsWith('/') || term.StartsWith('.'))
-        {
-            xpath = term;
-        }
-        else
-        {
-            xpath = $"//NotionObjectDto[contains(Title, '{term}')]";
-        }
-
+        var xpath = ResolveXPath(term);
         var nodes = doc.SelectNodes(xpath);
 
         var resultDoc = new XmlDocument();
         var root = resultDoc.CreateElement("Results");
-        
-        if (nodes != null)
+
+        if (nodes == null || nodes.Count == 0)
         {
-            XmlNode lastSourceParent = null;
-            XmlElement currentWrapper = null;
+            return new SoapSearchResponse { RawResponseXml = root, Message = $"No results found for: {term}" };
+        }
+        
+        ProcessXmlNodes(nodes, resultDoc, root);
 
-            foreach (XmlNode node in nodes)
+        return new SoapSearchResponse { RawResponseXml = root, Message = "OK" };
+    }
+
+    #region Private Helpers
+
+    private static string ResolveXPath(string term)
+    {
+        if (string.IsNullOrWhiteSpace(term)) return "//NotionObjectDto";
+        if (term.StartsWith('/') || term.StartsWith('.')) return term;
+        return $"//NotionObjectDto[contains(Title, '{term}')]";
+    }
+
+    private static void ProcessXmlNodes(XmlNodeList nodes, XmlDocument resultDoc, XmlElement root)
+    {
+        XmlNode lastSourceParent = null;
+        XmlElement currentWrapper = null;
+
+        foreach (XmlNode node in nodes)
+        {
+            switch (node.NodeType)
             {
-                if (node.NodeType == XmlNodeType.Element)
-                {
-                    if (node.ParentNode != null && node.ParentNode.Name == "NotionObjectDto")
+                case XmlNodeType.Element when node.ParentNode?.Name == "NotionObjectDto":
+                    if (node.ParentNode != lastSourceParent)
                     {
-                        if (node.ParentNode != lastSourceParent)
-                        {
-                            lastSourceParent = node.ParentNode;
-                            currentWrapper = resultDoc.CreateElement("NotionObjectDto");
-                            root.AppendChild(currentWrapper);
-                        }
+                        lastSourceParent = node.ParentNode;
+                        currentWrapper = resultDoc.CreateElement("NotionObjectDto");
+                        root.AppendChild(currentWrapper);
+                    }
+                    currentWrapper.AppendChild(resultDoc.ImportNode(node, true));
+                    break;
 
-                        currentWrapper.AppendChild(resultDoc.ImportNode(node, true));
-                    }
-                    else
-                    {
-                        root.AppendChild(resultDoc.ImportNode(node, true));
-                        lastSourceParent = null;
-                    }
-                }
-                else if (node.NodeType == XmlNodeType.Text || node.NodeType == XmlNodeType.Attribute)
-                {
+                case XmlNodeType.Element:
+                    root.AppendChild(resultDoc.ImportNode(node, true));
+                    lastSourceParent = null;
+                    break;
+
+                case XmlNodeType.Text:
+                case XmlNodeType.Attribute:
                     var textElement = resultDoc.CreateElement("Value");
                     textElement.InnerText = node.Value ?? node.InnerText;
                     root.AppendChild(textElement);
                     lastSourceParent = null;
-                }
+                    break;
             }
         }
-
-        return new SoapSearchResponse
-        {
-            RawResponseXml = root,
-            Message = nodes is { Count: > 0 } ? "OK" : "No results found for: " + term
-        };
     }
+
+    #endregion
 }

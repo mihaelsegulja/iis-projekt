@@ -114,8 +114,7 @@ export interface GridAction<T = any> {
     .empty-message {
       text-align: center;
       padding: 32px;
-      color: rgba(0,0,0,0.5);
-      font-size: 0.9rem;
+      color: #fff;
     }
     tr.empty td {
       padding: 0 !important;

@@ -30,10 +30,10 @@ import { MatTooltip } from "@angular/material/tooltip";
     }
     .editor {
       width: 100%;
-      font-family: 'Roboto Mono', 'Consolas', 'Courier New', monospace;
+      font-family: 'Roboto Mono', monospace;
       font-size: 14px;
       padding: 12px;
-      border: 1px solid rgba(0,0,0,0.12);
+      border: 1px solid rgba(0,0,0,0.2);
       border-radius: 4px;
       resize: vertical;
       tab-size: 2;

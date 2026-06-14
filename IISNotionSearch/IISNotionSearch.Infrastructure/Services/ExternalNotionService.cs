@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using IISNotionSearch.Application.Configurations;
 using IISNotionSearch.Application.DTOs.Notion;
 using IISNotionSearch.Application.Interfaces.Services;
@@ -24,7 +23,7 @@ public class ExternalNotionService : INotionService
         try
         {
             var response = await _httpClient.SearchAsync(query);
-            var dtos = response?.ToDtos() ?? Enumerable.Empty<NotionObjectDto>();
+            var dtos = response?.ToDtos();
             return StandardResponse<IEnumerable<NotionObjectDto>>.Create(ResultStatus.Ok, dtos);
         }
         catch (Exception ex)
@@ -39,11 +38,9 @@ public class ExternalNotionService : INotionService
         {
             var response = await _httpClient.GetPageAsync(id);
             var dto = response?.ToDto();
-            if (dto == null)
-            {
-                return StandardResponse<NotionObjectDto>.Create(ResultStatus.NotFound, message: "Page not found");
-            }
-            return StandardResponse<NotionObjectDto>.Create(ResultStatus.Ok, dto);
+            return dto == null 
+                ? StandardResponse<NotionObjectDto>.Create(ResultStatus.NotFound, message: "Page not found") 
+                : StandardResponse<NotionObjectDto>.Create(ResultStatus.Ok, dto);
         }
         catch (Exception ex)
         {
@@ -59,13 +56,9 @@ public class ExternalNotionService : INotionService
             var response = await _httpClient.CreatePageAsync(apiRequest);
             var dto = response?.ToDto();
 
-            if (dto == null)
-            {
-                return StandardResponse<NotionObjectDto>.Create(ResultStatus.InternalError,
-                    message: "Failed to parse Notion API response");
-            }
-
-            return StandardResponse<NotionObjectDto>.Create(ResultStatus.Created, dto);
+            return dto == null
+                ? StandardResponse<NotionObjectDto>.Create(ResultStatus.InternalError, message: "Failed to parse Notion API response")
+                : StandardResponse<NotionObjectDto>.Create(ResultStatus.Created, dto);
         }
         catch (Exception ex)
         {
@@ -81,13 +74,9 @@ public class ExternalNotionService : INotionService
             var response = await _httpClient.UpdatePageAsync(id, apiRequest);
             var dto = response?.ToDto();
 
-            if (dto == null)
-            {
-                return StandardResponse<NotionObjectDto>.Create(ResultStatus.InternalError,
-                    message: "Failed to parse Notion API response");
-            }
-
-            return StandardResponse<NotionObjectDto>.Create(ResultStatus.Ok, dto);
+            return dto == null
+                ? StandardResponse<NotionObjectDto>.Create(ResultStatus.InternalError, message: "Failed to parse Notion API response")
+                : StandardResponse<NotionObjectDto>.Create(ResultStatus.Ok, dto);
         }
         catch (Exception ex)
         {
@@ -110,7 +99,7 @@ public class ExternalNotionService : INotionService
 
     #region Private methods
 
-    private static object BuildCreateRequest(CreateNotionPageDto dto, string parentPageId)
+    private static Dictionary<string, object?> BuildCreateRequest(CreateNotionPageDto dto, string parentPageId)
     {
         var title = string.IsNullOrWhiteSpace(dto.Title) ? "New Page" : dto.Title;
 
@@ -138,7 +127,7 @@ public class ExternalNotionService : INotionService
         return request;
     }
 
-    private static object BuildUpdateRequest(UpdateNotionPageDto dto)
+    private static Dictionary<string, object?> BuildUpdateRequest(UpdateNotionPageDto dto)
     {
         var body = new Dictionary<string, object?>();
 

@@ -130,7 +130,7 @@ const CATEGORIES: EmojiCategory[] = [
       flex-shrink: 0;
     }
     .tab:hover { background: rgba(0,0,0,0.06); }
-    .tab.active { background: var(--mat-sys-secondary-container, #e0e0e0); }
+    .tab.active { background: var(--mat-sys-secondary-container); }
     .scroll-area {
       max-height: 280px; overflow-y: auto; padding: 4px 8px 8px;
     }
@@ -146,7 +146,7 @@ const CATEGORIES: EmojiCategory[] = [
       border-radius: 6px; background: transparent; cursor: pointer; padding: 0;
     }
     .emoji-btn:hover { background: rgba(0,0,0,0.06); }
-    .emoji-btn.selected { background: var(--mat-sys-secondary-container, #e0e0e0); }
+    .emoji-btn.selected { background: var(--mat-sys-secondary-container); }
   `,
 })
 export class EmojiPickerComponent {

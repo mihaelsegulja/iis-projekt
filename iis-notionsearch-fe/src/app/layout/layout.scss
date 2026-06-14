@@ -5,7 +5,7 @@
   color: var(--mat-sys-on-background);
 }
 .sidenav {
-  width: 240px;
+  width: 220px;
   flex-shrink: 0;
   background: var(--mat-sys-surface-container-low);
   color: var(--mat-sys-on-surface);
@@ -54,6 +54,6 @@
 }
 .main-content {
   flex: 1;
-  padding: 24px;
+  padding: 10px;
   overflow-y: auto;
 }

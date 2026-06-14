@@ -171,18 +171,13 @@ public class ImportService : IImportService
         if (node.Errors is { Count: > 0 })
         {
             var path = string.IsNullOrEmpty(node.InstanceLocation.ToString()) ? "Root" : node.InstanceLocation.ToString();
-            foreach (var kvp in node.Errors)
-            {
-                errList.Add($"[{path}] {kvp.Value}");
-            }
+            errList.AddRange(node.Errors.Select(kvp => $"[{path}] {kvp.Value}"));
         }
 
-        if (node.Details != null)
+        if (node.Details == null) return;
+        foreach (var child in node.Details)
         {
-            foreach (var child in node.Details)
-            {
-                ExtractJsonErrors(child, errList);
-            }
+            ExtractJsonErrors(child, errList);
         }
     }
 
