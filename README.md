@@ -5,7 +5,7 @@
 - **Backend:** ASP.NET Core 8 Web API (Clean Architecture)
 - **Database:** SQL Server (Docker)
 - **Frontend:** Angular 21
-- **Key Features:** JWT Auth (Access/Refresh), Notion API Integration, XML/JSON Validation, SOAP, GraphQL
+- **Key Features:** JWT Auth (Access/Refresh), Notion API Integration, XML/JSON Validation, SOAP, GraphQL, gRPC
 
 ## Quick Start
 
@@ -44,6 +44,10 @@ dotnet run --project IISNotionSearch/IISNotionSearch.API/IISNotionSearch.API.csp
 ```
 
 - API is available at: <https://localhost:7026>. Swagger UI is available on `/swagger` in Development.
+- GraphQL: <https://localhost:7026/graphql/>
+- SOAP: <https://localhost:7026/Soap/NotionService.asmx>
+
+- Database migrations and data seeder are applied at start.
 
 3. Run the frontend
 
@@ -58,6 +62,20 @@ npm run start
 ```
 
 - Frontend is available at: <http://localhost:4200>
+
+### Configuration & Secrets
+
+App configuration and secrets are found inside `IISNotionSearch.API/appsettings.json`.
+
+#### External vs. Local Switch
+
+To change the application data source from the live Notion API to the local SQL database, switch the `DataSource` inside `appsettings.json` (available options: `Local` and `External`):
+
+```JSON
+"AppConfig": {
+  "DataSource": "Local"
+}
+```
 
 ### Database migrations (if needed)
 
